@@ -1,0 +1,14 @@
+{
+ "structures": [
+  {
+   "structure": "pletinnya:dragon_sanctuary",
+   "weight": 1
+  }
+ ],
+ "placement": {
+  "type": "minecraft:random_spread",
+  "spacing": 52,
+  "separation": 20,
+  "salt": 88123457
+ }
+}

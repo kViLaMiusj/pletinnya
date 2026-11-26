@@ -1,182 +1,316 @@
 {
-  "type": "minecraft:chest",
-  "pools": [
+ "type": "minecraft:chest",
+ "pools": [
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 2,
+    "max": 4
+   },
+   "entries": [
     {
-      "rolls": {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_water",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_fire",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_wind",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_earth",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_lightning",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_ice",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_nature",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_sound",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_light",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_darkness",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_blood",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_mana",
+     "weight": 4
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_basics",
+     "weight": 8
+    }
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 3,
+    "max": 6
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_crystal",
+     "weight": 20,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
         "type": "minecraft:uniform",
         "min": 2,
-        "max": 4
-      },
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_water",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_fire",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_wind",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_earth",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_lightning",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_ice",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_nature",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_sound",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_light",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_darkness",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_blood",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_mana",
-          "weight": 4
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:treatise_basics",
-          "weight": 10
-        }
-      ]
+        "max": 8
+       }
+      }
+     ]
     },
     {
-      "rolls": {
+     "type": "minecraft:item",
+     "name": "minecraft:book",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
         "type": "minecraft:uniform",
-        "min": 3,
-        "max": 6
-      },
-      "entries": [
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:mana_crystal",
-          "weight": 20,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 8
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:book",
-          "weight": 10,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 1,
-                "max": 3
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:paper",
-          "weight": 10,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 6
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "minecraft:lapis_lazuli",
-          "weight": 8,
-          "functions": [
-            {
-              "function": "minecraft:set_count",
-              "count": {
-                "type": "minecraft:uniform",
-                "min": 2,
-                "max": 6
-              }
-            }
-          ]
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:weaving_tablet",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:apprentice_staff",
-          "weight": 4
-        }
-      ]
+        "min": 1,
+        "max": 3
+       }
+      }
+     ]
     },
     {
-      "rolls": 1,
-      "entries": [
-        {
-          "type": "minecraft:empty",
-          "weight": 6
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:weaver_staff",
-          "weight": 3
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:weave_eye",
-          "weight": 2
-        },
-        {
-          "type": "minecraft:item",
-          "name": "pletinnya:architect_staff",
-          "weight": 1
-        }
-      ]
+     "type": "minecraft:item",
+     "name": "minecraft:paper",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "minecraft:lapis_lazuli",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_elixir",
+     "weight": 6,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:weaving_tablet",
+     "weight": 3
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:apprentice_staff",
+     "weight": 4
     }
-  ]
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 1,
+    "max": 1
+   },
+   "entries": [
+    {
+     "type": "minecraft:empty",
+     "weight": 8
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:weaver_staff",
+     "weight": 3
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:weave_eye",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_water",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_fire",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_wind",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_earth",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_lightning",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_ice",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_nature",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_sound",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_light",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_darkness",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_blood",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_mana",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_helmet",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_chestplate",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_leggings",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_boots",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:fire_helmet",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:fire_chestplate",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:fire_leggings",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:fire_boots",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:lightning_helmet",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:lightning_chestplate",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:lightning_leggings",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:lightning_boots",
+     "weight": 1
+    }
+   ]
+  }
+ ]
 }
