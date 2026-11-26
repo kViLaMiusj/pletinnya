@@ -2,7 +2,7 @@ package ua.pletinnya.client.armor;
 
 import net.minecraft.client.model.*;
 
-/** Згенеровано tools/art/armor_models5.py — одяг за мотивами Iron's Spells. Не редагувати вручну. */
+/** Згенеровано tools/art/armor_models6.py — одяг за мотивами Iron's Spells. Не редагувати вручну. */
 public final class ArmorModels {
 	private ArmorModels() {}
 
