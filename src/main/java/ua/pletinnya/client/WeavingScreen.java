@@ -46,6 +46,10 @@ public class WeavingScreen extends Screen {
 	private final List<Integer> input = new ArrayList<>();
 	private int lastQuality = -1;
 
+	public static void setTab(int t) {
+		tab = t;
+	}
+
 	public WeavingScreen() {
 		super(Text.translatable("screen.pletinnya.tablet"));
 		MageData d = ClientMage.data;

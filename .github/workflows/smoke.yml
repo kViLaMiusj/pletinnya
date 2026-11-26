@@ -5,6 +5,9 @@ on:
     branches: [dev]
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   smoke:
     runs-on: ubuntu-latest
@@ -22,3 +25,12 @@ jobs:
         run: |
           chmod +x gradlew ci/smoke.sh
           ./ci/smoke.sh
+      - name: Знімки екрана
+        if: always()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if ls run/screenshots/*.png >/dev/null 2>&1; then
+            gh release delete ci-shots --yes --cleanup-tag || true
+            gh release create ci-shots run/screenshots/*.png --prerelease --title "CI: знімки" --notes "Автоматичні знімки з гри" --target dev
+          fi

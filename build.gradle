@@ -35,3 +35,14 @@ java {
 	sourceCompatibility = JavaVersion.VERSION_21
 	targetCompatibility = JavaVersion.VERSION_21
 }
+
+loom {
+	runs {
+		client {
+			if (System.getenv("PLETINNYA_AUTOTEST") != null) {
+				vmArg "-Dpletinnya.autotest=true"
+				programArgs "--quickPlaySingleplayer", "smoke", "--width", "1280", "--height", "720"
+			}
+		}
+	}
+}

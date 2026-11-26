@@ -49,6 +49,7 @@ public class PletinnyaClient implements ClientModInitializer {
 			ctx.client().setScreen(new WeavingScreen()));
 
 		HudRenderCallback.EVENT.register(ManaHud::render);
+		AutoTest.init();
 		ClientTickEvents.END_CLIENT_TICK.register(this::onTick);
 	}
 

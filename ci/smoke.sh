@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
-# Димовий тест: сервер (дані, світогенерація, структури) і клієнт (моделі, текстури, частинки) з модом.
+# Димовий тест: сервер (дані, світогенерація, структури), потім клієнт у світі з автоматичними знімками.
 set -u
 mkdir -p run
 echo "eula=true" > run/eula.txt
-printf "online-mode=false\nspawn-protection=0\nlevel-seed=pletinnya\n" > run/server.properties
+printf "online-mode=false\nspawn-protection=0\nlevel-seed=pletinnya\nlevel-name=world\n" > run/server.properties
 
 echo "=== SERVER ==="
 ( sleep 150
@@ -11,10 +11,26 @@ echo "=== SERVER ==="
     echo "locate structure pletinnya:$s"; sleep 4
   done
   echo "stop" ) | timeout 420 ./gradlew runServer --console=plain > server_out.txt 2>&1 || true
-grep -E "Done \(|ERROR|Exception|Couldn't|Failed|Unknown|located|could not find|nearest" -i run/logs/latest.log | grep -vE "realms|telemetry|Unable to load the Realms" | head -80
+grep -E "Done \(|ERROR|Exception|Couldn't|Failed|Unknown|nearest|could not" -i run/logs/latest.log | grep -vE "realms|telemetry|data fixer" | head -60
 
 echo "=== CLIENT ==="
-rm -f run/logs/latest.log
-timeout 200 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --console=plain > client_out.txt 2>&1 || true
-grep -E "ERROR|Exception|Missing|Unable to|Failed|missing" run/logs/latest.log | grep -vE "realms|telemetry|Realms|narrator|OpenAL|joystick|Narrator|GLFW error 65544" | sort | uniq -c | sort -rn | head -60
-grep -c "Плетіння пробуджується" run/logs/latest.log || true
+mkdir -p run/saves && rm -rf run/saves/smoke && cp -r run/world run/saves/smoke
+cat > run/options.txt <<'OPT'
+pauseOnLostFocus:false
+renderDistance:8
+simulationDistance:8
+guiScale:2
+onboardAccessibility:false
+tutorialStep:none
+skipMultiplayerWarning:true
+joinedFirstServer:true
+narrator:0
+soundCategory_master:0.0
+maxFps:60
+graphicsMode:1
+OPT
+rm -f run/logs/latest.log; rm -rf run/screenshots
+PLETINNYA_AUTOTEST=1 timeout 1500 xvfb-run -a -s "-screen 0 1280x720x24" ./gradlew runClient --console=plain > client_out.txt 2>&1 || true
+grep -E "ERROR|Exception|Missing|Unable to|Failed|missing|AutoTest" run/logs/latest.log | grep -vE "realms|telemetry|Realms|narrator|OpenAL|Narrator|GLFW error 65544|SoundSystem|flite|data fixer|goat" | sort | uniq -c | sort -rn | head -60
+grep -A30 "Exception" run/logs/latest.log | grep -vE "flite|libflite" | head -60
+ls run/screenshots | wc -l
