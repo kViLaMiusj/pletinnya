@@ -235,7 +235,7 @@ public class WeavingScreen extends Screen {
 		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.cost", (int) Math.ceil(cost), (int) d.mana), tx, iy + 11, cost <= d.mana ? 0x9DB4FF : 0xFF7070);
 		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.conductivity", (int) cond), tx, iy + 22, cost <= cond ? 0xC8C8C8 : 0xFF9040);
 		Text qualT = Text.translatable("screen.pletinnya.quality", draft.quality());
-		ctx.drawTextWithShadow(textRenderer, qualT, x + 231 - textRenderer.getWidth(qualT), iy + 22, draft.quality() > 0 ? 0xFFD27A : 0x8A8090);
+		ctx.drawTextWithShadow(textRenderer, qualT, x + 231 - textRenderer.getWidth(qualT), iy + 11, draft.quality() > 0 ? 0xFFD27A : 0x8A8090);
 		Text hint = draft.triggerType().minRank > d.rank ? Text.translatable("message.pletinnya.trigger_rank", Ranks.title(draft.triggerType().minRank))
 			: cost > cond ? Text.translatable("screen.pletinnya.warn_overload")
 			: Text.translatable("screen.pletinnya.desc." + draft.formType().id);
