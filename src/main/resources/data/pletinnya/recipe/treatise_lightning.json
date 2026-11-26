@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "pletinnya:essence_lightning"
+    },
+    {
+      "item": "pletinnya:essence_lightning"
+    }
+  ],
+  "result": {
+    "id": "pletinnya:treatise_lightning",
+    "count": 1
+  }
+}

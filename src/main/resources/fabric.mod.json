@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "id": "pletinnya",
+  "version": "${version}",
+  "name": "Плетіння",
+  "description": "Магічна система «Плетіння»: мана, провідність, точність, сприйняття, сім рангів, дванадцять напрямів і закляття, які маг складає сам.",
+  "authors": ["Автор новели"],
+  "license": "All-Rights-Reserved",
+  "icon": "assets/pletinnya/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["ua.pletinnya.Pletinnya"],
+    "client": ["ua.pletinnya.client.PletinnyaClient"]
+  },
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "minecraft": "~1.21.1",
+    "java": ">=21",
+    "fabric-api": "*"
+  }
+}

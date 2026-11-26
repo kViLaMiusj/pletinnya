@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "minecraft:book"
+    },
+    {
+      "item": "pletinnya:essence_darkness"
+    },
+    {
+      "item": "pletinnya:essence_darkness"
+    }
+  ],
+  "result": {
+    "id": "pletinnya:treatise_darkness",
+    "count": 1
+  }
+}

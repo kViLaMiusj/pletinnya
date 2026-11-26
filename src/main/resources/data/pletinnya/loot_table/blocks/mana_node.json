@@ -1,0 +1,21 @@
+{
+  "type": "minecraft:block",
+  "random_sequence": "pletinnya:blocks/mana_node",
+  "pools": [
+    {
+      "rolls": 1,
+      "bonus_rolls": 0,
+      "entries": [
+        {
+          "type": "minecraft:item",
+          "name": "pletinnya:mana_node"
+        }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:survives_explosion"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "type": "minecraft:crafting_shapeless",
+  "category": "misc",
+  "ingredients": [
+    {
+      "item": "pletinnya:apprentice_staff"
+    },
+    {
+      "item": "pletinnya:mana_crystal_block"
+    },
+    {
+      "item": "pletinnya:essence_mana"
+    },
+    {
+      "item": "minecraft:gold_ingot"
+    }
+  ],
+  "result": {
+    "id": "pletinnya:weaver_staff",
+    "count": 1
+  }
+}
