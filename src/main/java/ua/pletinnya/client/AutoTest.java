@@ -207,7 +207,7 @@ public final class AutoTest {
 						w.setBlockState(base.add(x, -1, z), (x + z) % 7 == 0 ? net.minecraft.block.Blocks.MOSS_BLOCK.getDefaultState() : net.minecraft.block.Blocks.GRASS_BLOCK.getDefaultState());
 				t.place(w, base, base, new net.minecraft.structure.StructurePlacementData(), w.getRandom(), 2);
 				double cx = bx + size.getX() / 2.0, cz = size.getZ() / 2.0;
-				double dist = Math.max(size.getX(), size.getZ()) * 1.05 + 6;
+				double dist = Math.max(size.getX(), size.getZ()) * 0.85 + 4;
 				p.requestTeleport(cx - dist * 0.75, 200 + size.getY() * 0.75 + dist * 0.35, cz - dist * 0.75);
 				p.lookAt(net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor.EYES, new net.minecraft.util.math.Vec3d(cx, 200 + size.getY() * 0.35, cz));
 			}));
