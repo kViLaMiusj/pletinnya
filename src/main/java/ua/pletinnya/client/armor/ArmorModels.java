@@ -5,14 +5,14 @@ import net.minecraft.client.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Згенеровано tools/art/armor_models7.py — вбрання магів за мотивами Iron's Spells. Не редагувати вручну. */
+/** Згенеровано tools/art/armor_models8.py — вбрання магів. Не редагувати вручну. */
 public final class ArmorModels {
 	private ArmorModels() {}
 
 	public static final int TEX_W = 64, TEX_H = 96;
 
-	private static boolean hasBrim(String set) { return switch (set) { case  -> true; default -> false; }; }
-	private static boolean hasCape(String set) { return switch (set) { case "water", "fire", "wind", "earth", "lightning", "ice", "nature", "sound", "light", "darkness", "blood", "mana", "dragon", "spirit", "holy", "aura" -> true; default -> false; }; }
+	private static boolean hasBrim(String set) { return switch (set) { case "lightning", "mana", "holy" -> true; default -> false; }; }
+	private static boolean hasCape(String set) { return switch (set) { case "water", "fire", "wind", "ice", "nature", "sound", "light", "darkness", "blood", "dragon", "spirit" -> true; default -> false; }; }
 
 	public static TexturedModelData create(String set) {
 		ModelData md = new ModelData();
@@ -38,7 +38,6 @@ public final class ArmorModels {
 		return TexturedModelData.of(md, TEX_W, TEX_H);
 	}
 
-	/** Дочірні частини: {кістка, назва}. Префікс назви визначає слот (h_, c_, l_, f_). */
 	public static String[][] children(String set) {
 		List<String[]> l = new ArrayList<>(List.of(new String[][]{{"head", "h_helm"}, {"body", "c_body"}, {"right_arm", "c_arm"}, {"left_arm", "c_arm"}, {"body", "l_waist"}, {"right_leg", "l_leg"}, {"left_leg", "l_leg"}, {"right_leg", "f_boot"}, {"left_leg", "f_boot"}}));
 		if (hasBrim(set)) l.add(new String[]{"head", "h_brim"});
