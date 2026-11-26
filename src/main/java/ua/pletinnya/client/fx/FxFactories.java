@@ -29,9 +29,13 @@ public final class FxFactories {
 		}
 		reg.register(ModParticles.GLYPH, sprites -> (p, world, x, y, z, vx, vy, vz) ->
 			new FxParticle(world, x, y, z, vx, vy, vz, sprites, 28, p.size(), p.size() * 0.85f, 0f, 0.9f, 0.02f, false, p.color()).withSprite(p.index(), 16));
+		reg.register(ModParticles.FLAT_GLYPH, sprites -> (p, world, x, y, z, vx, vy, vz) ->
+			new FxParticle(world, x, y, z, 0, 0, 0, sprites, 34, p.size() * 0.4f, p.size() * 0.5f, 0f, 1f, -0.03f, false, p.color()).withSprite(p.index(), 16).flat());
 		reg.register(ModParticles.MOTE, sprites -> (p, world, x, y, z, vx, vy, vz) ->
 			new FxParticle(world, x, y, z, vx, vy, vz, sprites, p.life(), p.size(), p.size() * 0.2f, 0f, 0.94f, 0f, false, p.color()));
 		reg.register(ModParticles.RING, sprites -> (p, world, x, y, z, vx, vy, vz) ->
-			new FxParticle(world, x, y, z, vx, vy, vz, sprites, 14, p.size() * 0.2f, p.size(), 0f, 0.9f, 0f, false, p.color()));
+			new FxParticle(world, x, y, z, vx, vy, vz, sprites, 14, p.size() * 0.15f, p.size() * 0.5f, 0f, 0.9f, 0f, false, p.color()).flat());
+		reg.register(ModParticles.CIRCLE, sprites -> (p, world, x, y, z, vx, vy, vz) ->
+			new FxParticle(world, x, y, z, 0, 0, 0, sprites, 34, p.size() * 0.42f, p.size() * 0.5f, 0f, 1f, 0.045f, false, p.color()).flat());
 	}
 }

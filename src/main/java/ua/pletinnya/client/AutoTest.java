@@ -109,6 +109,8 @@ public final class AutoTest {
 			cmd(c, "item replace entity @me weapon.mainhand with pletinnya:staff_mana");
 		});
 		add(4, c -> shot(c, "hold_third"));
+		add(4, c -> c.options.setPerspective(Perspective.THIRD_PERSON_BACK));
+		add(6, c -> shot(c, "hold_back"));
 		// інвентар з іконками
 		String[][] pages = {
 			{"essence_water", "essence_fire", "essence_wind", "essence_earth", "essence_lightning", "essence_ice", "essence_nature", "essence_sound", "essence_light",
@@ -152,7 +154,8 @@ public final class AutoTest {
 					SpellCaster.forget(p.getUuid());
 					SpellCaster.cast(p, d, sf);
 				}));
-				add(30, c -> shot(c, "spell_" + e.id + "_" + f.id));
+				add(f == SpellForm.AREA ? 2 : 3, c -> shot(c, "spell_" + e.id + "_" + f.id));
+				add(25, c -> { });
 			}
 		}
 		// конструкти
@@ -181,26 +184,34 @@ public final class AutoTest {
 		add(3, c -> shot(c, "dragon_voice"));
 		add(5, c -> c.setScreen(null));
 		add(10, c -> shot(c, "hud"));
-		// структури
-		String[] structs = {"mage_tower", "ley_circle", "shrine", "aurora_hut", "academy_ruins", "dragon_sanctuary", "spirit_grove"};
+		// структури: шаблон на рівному майданчику в небі, камера під кутом
+		String[] structs = {"mage_tower", "ley_circle", "shrine", "aurora_hut", "academy_ruins", "dragon_sanctuary", "spirit_grove", "weaver_vault"};
 		for (int i = 0; i < structs.length; i++) {
 			final String s = structs[i];
-			final int bx = 600 + i * 160;
+			final int bx = 600 + i * 64;
 			add(40, c -> {
 				c.options.hudHidden = true;
 				c.options.setPerspective(Perspective.FIRST_PERSON);
-				cmd(c, "tp @me " + bx + " 200 0");
+				cmd(c, "tp @me " + (bx - 14) + " 230 -14");
 			});
-			add(60, c -> cmd(c, "place structure pletinnya:" + s + " " + bx + " 64 0"));
-			add(30, c -> serverPlayer(c, p -> {
+			add(40, c -> serverPlayer(c, p -> {
 				net.minecraft.server.world.ServerWorld w = p.getServerWorld();
-				int top = w.getTopY(net.minecraft.world.Heightmap.Type.WORLD_SURFACE, bx + 7, 7);
-				p.requestTeleport(bx - 13, top + 14, -13);
-				p.lookAt(net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor.EYES, new net.minecraft.util.math.Vec3d(bx + 7, top + 2, 7));
+				var tm = w.getStructureTemplateManager().getTemplate(ua.pletinnya.Pletinnya.id(s));
+				if (tm.isEmpty()) return;
+				var t = tm.get();
+				net.minecraft.util.math.Vec3i size = t.getSize();
+				net.minecraft.util.math.BlockPos base = new net.minecraft.util.math.BlockPos(bx, 200, 0);
+				for (int x = -6; x < size.getX() + 6; x++)
+					for (int z = -6; z < size.getZ() + 6; z++)
+						w.setBlockState(base.add(x, -1, z), (x + z) % 7 == 0 ? net.minecraft.block.Blocks.MOSS_BLOCK.getDefaultState() : net.minecraft.block.Blocks.GRASS_BLOCK.getDefaultState());
+				t.place(w, base, base, new net.minecraft.structure.StructurePlacementData(), w.getRandom(), 2);
+				double cx = bx + size.getX() / 2.0, cz = size.getZ() / 2.0;
+				double dist = Math.max(size.getX(), size.getZ()) * 1.05 + 6;
+				p.requestTeleport(cx - dist * 0.75, 200 + size.getY() * 0.75 + dist * 0.35, cz - dist * 0.75);
+				p.lookAt(net.minecraft.command.argument.EntityAnchorArgumentType.EntityAnchor.EYES, new net.minecraft.util.math.Vec3d(cx, 200 + size.getY() * 0.35, cz));
 			}));
-			add(100, c -> { });
+			add(120, c -> { });
 			add(3, c -> shot(c, "structure_" + s));
 		}
-		add(20, c -> cmd(c, "place structure pletinnya:weaver_vault 1800 40 0"));
 	}
 }

@@ -35,6 +35,27 @@ public final class FxEffects {
 		@Override public ParticleType<?> getType() { return ModParticles.MOTE; }
 	}
 
+	/** Пласке магічне коло на землі. */
+	public record Circle(int color, float size) implements ParticleEffect {
+		public static final MapCodec<Circle> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+			Codec.INT.fieldOf("color").forGetter(Circle::color),
+			Codec.FLOAT.fieldOf("size").forGetter(Circle::size)).apply(i, Circle::new));
+		public static final PacketCodec<RegistryByteBuf, Circle> PACKET = PacketCodec.tuple(
+			PacketCodecs.INTEGER, Circle::color, PacketCodecs.FLOAT, Circle::size, Circle::new);
+		@Override public ParticleType<?> getType() { return ModParticles.CIRCLE; }
+	}
+
+	/** Сигіл, що лежить на землі. */
+	public record FlatGlyph(int index, int color, float size) implements ParticleEffect {
+		public static final MapCodec<FlatGlyph> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(
+			Codec.INT.fieldOf("index").forGetter(FlatGlyph::index),
+			Codec.INT.fieldOf("color").forGetter(FlatGlyph::color),
+			Codec.FLOAT.fieldOf("size").forGetter(FlatGlyph::size)).apply(i, FlatGlyph::new));
+		public static final PacketCodec<RegistryByteBuf, FlatGlyph> PACKET = PacketCodec.tuple(
+			PacketCodecs.VAR_INT, FlatGlyph::index, PacketCodecs.INTEGER, FlatGlyph::color, PacketCodecs.FLOAT, FlatGlyph::size, FlatGlyph::new);
+		@Override public ParticleType<?> getType() { return ModParticles.FLAT_GLYPH; }
+	}
+
 	/** Кільце, що розширюється. */
 	public record Ring(int color, float size) implements ParticleEffect {
 		public static final MapCodec<Ring> CODEC = RecordCodecBuilder.mapCodec(i -> i.group(

@@ -20,6 +20,13 @@ public final class ModParticles {
 	public static final ParticleType<FxEffects.Ring> RING = Registry.register(Registries.PARTICLE_TYPE, Pletinnya.id("ring"),
 		FabricParticleTypes.complex(true, FxEffects.Ring.CODEC, FxEffects.Ring.PACKET));
 
+	/** Пласке магічне коло (лежить на землі). */
+	public static final ParticleType<FxEffects.Circle> CIRCLE = Registry.register(Registries.PARTICLE_TYPE, Pletinnya.id("circle"),
+		FabricParticleTypes.complex(true, FxEffects.Circle.CODEC, FxEffects.Circle.PACKET));
+	/** Сигіл, що лежить на землі. */
+	public static final ParticleType<FxEffects.FlatGlyph> FLAT_GLYPH = Registry.register(Registries.PARTICLE_TYPE, Pletinnya.id("flat_glyph"),
+		FabricParticleTypes.complex(true, FxEffects.FlatGlyph.CODEC, FxEffects.FlatGlyph.PACKET));
+
 	static {
 		for (Element e : Element.values()) {
 			ELEMENT[e.ordinal()] = Registry.register(Registries.PARTICLE_TYPE, Pletinnya.id("fx_" + e.id), FabricParticleTypes.simple(true));

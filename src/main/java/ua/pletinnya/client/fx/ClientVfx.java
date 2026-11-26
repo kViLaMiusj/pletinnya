@@ -48,21 +48,18 @@ public final class ClientVfx {
 
 	// ---------------------------------------------------------------- коло плетіння
 	static void castCircle(ClientWorld w, Vec3d c, Element e, float r) {
-		int n = 12;
-		double y = c.y + 0.05;
-		for (int i = 0; i < n; i++) {
-			double a = i * Math.PI * 2 / n;
-			int idx = i % 3 == 0 ? e.ordinal() : 11;
-			add(w, new FxEffects.Glyph(idx, i % 3 == 0 ? e.color : 0xB8AEFF, 0.28f), c.x + Math.cos(a) * r, y + 0.1, c.z + Math.sin(a) * r,
-				-Math.sin(a) * 0.03, 0.015, Math.cos(a) * 0.03);
+		double y = c.y + 0.06;
+		add(w, new FxEffects.Circle(e.color, r * 2.8f), c.x, y, c.z, 0, 0, 0);
+		add(w, new FxEffects.FlatGlyph(e.ordinal(), e.color, r * 0.9f), c.x, y + 0.02, c.z, 0, 0, 0);
+		for (int i = 0; i < 6; i++) {
+			double a = i * Math.PI * 2 / 6;
+			add(w, new FxEffects.Glyph(i % 2 == 0 ? e.ordinal() : 11, i % 2 == 0 ? e.color : 0xB8AEFF, 0.22f),
+				c.x + Math.cos(a) * r * 1.2, y + 0.2, c.z + Math.sin(a) * r * 1.2, -Math.sin(a) * 0.02, 0.045, Math.cos(a) * 0.02);
 		}
-		for (int i = 0; i < 40; i++) {
-			double a = i * Math.PI * 2 / 40;
-			add(w, mote(e.color, 0.12f, 18), c.x + Math.cos(a) * r * 1.15, y, c.z + Math.sin(a) * r * 1.15, 0, 0.02, 0);
-			if (i % 2 == 0) add(w, mote(0xE8E0FF, 0.08f, 14), c.x + Math.cos(a) * r * 0.6, y, c.z + Math.sin(a) * r * 0.6, 0, 0.03, 0);
+		for (int i = 0; i < 32; i++) {
+			double a = i * Math.PI * 2 / 32;
+			add(w, mote(e.color, 0.1f, 22), c.x + Math.cos(a) * r * 1.35, y, c.z + Math.sin(a) * r * 1.35, 0, 0.03 + (i % 3) * 0.01, 0);
 		}
-		add(w, new FxEffects.Glyph(e.ordinal(), e.color, 0.9f), c.x, c.y + 0.15, c.z, 0, 0.01, 0);
-		add(w, new FxEffects.Ring(e.color, r * 2.4f), c.x, c.y + 0.1, c.z, 0, 0, 0);
 	}
 
 	// ---------------------------------------------------------------- влучання й області
@@ -205,7 +202,8 @@ public final class ClientVfx {
 	}
 
 	static void rune(ClientWorld w, Vec3d c, Element e, float r) {
-		add(w, new FxEffects.Glyph(e.ordinal(), e.color, Math.max(0.5f, r * 0.7f)), c.x, c.y + 0.12, c.z, 0, 0, 0);
+		add(w, new FxEffects.Circle(e.color, Math.max(1.6f, r * 2f)), c.x, c.y + 0.08, c.z, 0, 0, 0);
+		add(w, new FxEffects.FlatGlyph(e.ordinal(), e.color, Math.max(0.8f, r * 0.7f)), c.x, c.y + 0.1, c.z, 0, 0, 0);
 		for (int i = 0; i < 16; i++) {
 			double a = i * Math.PI / 8;
 			add(w, mote(e.color, 0.1f, 24), c.x + Math.cos(a) * r, c.y + 0.1, c.z + Math.sin(a) * r, 0, 0.01, 0);
@@ -219,6 +217,7 @@ public final class ClientVfx {
 			add(w, new FxEffects.Glyph(rnd.nextInt(16), 0xE8E4FF, 0.22f), c.x, c.y + 1, c.z, v.x, v.y, v.z);
 		}
 		add(w, new FxEffects.Ring(0xE8E4FF, r * 2.5f), c.x, c.y + 0.2, c.z, 0, 0, 0);
+		add(w, new FxEffects.Circle(0xE8E4FF, r * 2.2f), c.x, c.y + 0.06, c.z, 0, 0, 0);
 	}
 
 	static void misfire(ClientWorld w, Vec3d c) {
@@ -242,8 +241,8 @@ public final class ClientVfx {
 			double a = i * 0.7, rr = 0.35 + (i % 3) * 0.15;
 			add(w, mote(i % 2 == 0 ? col : 0xFFF1C0, 0.18f, 30), c.x + Math.cos(a) * rr, c.y + 6 - i * 0.1, c.z + Math.sin(a) * rr, 0, -0.12, 0);
 		}
-		add(w, new FxEffects.Glyph(14, col, 1.1f), c.x, c.y + 0.1, c.z, 0, 0, 0);
-		add(w, new FxEffects.Ring(col, 3.5f), c.x, c.y + 0.1, c.z, 0, 0, 0);
+		add(w, new FxEffects.Circle(col, 4.5f), c.x, c.y + 0.06, c.z, 0, 0, 0);
+		add(w, new FxEffects.FlatGlyph(14, col, 1.3f), c.x, c.y + 0.08, c.z, 0, 0, 0);
 	}
 
 	static void dragon(ClientWorld w, Vec3d c, Vec3d dir, Element e, float power) {
@@ -262,6 +261,7 @@ public final class ClientVfx {
 			double t = i / 40.0, a = t * Math.PI * 4;
 			add(w, mote(0xBFFFF8, 0.16f, 34), c.x + Math.cos(a) * r, c.y + 0.3 + t * 2, c.z + Math.sin(a) * r, 0, 0.02, 0);
 		}
+		add(w, new FxEffects.Circle(0x9FFFF5, r * 2.6f), c.x, c.y + 0.06, c.z, 0, 0, 0);
 		add(w, new FxEffects.Glyph(13, 0x9FFFF5, 0.9f), c.x, c.y + 1.2, c.z, 0, 0.01, 0);
 		add(w, new FxEffects.Glyph(e.ordinal(), e.color, 0.6f), c.x, c.y + 1.9, c.z, 0, 0.01, 0);
 	}
@@ -290,7 +290,7 @@ public final class ClientVfx {
 			add(w, new FxEffects.Glyph(i, 0xFFD27A, 0.3f), c.x + Math.cos(a) * 1.5, c.y + 0.2, c.z + Math.sin(a) * 1.5, 0, 0.12, 0);
 		}
 		for (int i = 0; i < 60; i++) add(w, mote(0xFFE9A0, 0.15f, 40), c.x + Math.cos(i) * 0.6, c.y + i * 0.06, c.z + Math.sin(i) * 0.6, 0, 0.05, 0);
-		add(w, new FxEffects.Ring(0xFFD27A, 5f), c.x, c.y + 0.1, c.z, 0, 0, 0);
+		add(w, new FxEffects.Circle(0xFFD27A, 6f), c.x, c.y + 0.06, c.z, 0, 0, 0);
 	}
 
 	static void heal(ClientWorld w, Vec3d c, float h) {

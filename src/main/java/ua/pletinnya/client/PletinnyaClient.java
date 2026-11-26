@@ -30,6 +30,7 @@ public class PletinnyaClient implements ClientModInitializer {
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MANA_GLASS, RenderLayer.getTranslucent());
 		BlockRenderLayerMap.INSTANCE.putBlock(ModBlocks.MANA_CRYSTAL_CLUSTER, RenderLayer.getCutout());
 		ua.pletinnya.client.fx.FxFactories.register();
+		GuiIcons.register();
 		ua.pletinnya.client.armor.MageArmorRenderer.registerAll();
 		ClientPlayNetworking.registerGlobalReceiver(ua.pletinnya.fx.Vfx.Payload.ID, (payload, ctx) -> {
 			if (ctx.client().world != null) ua.pletinnya.client.fx.ClientVfx.play(ctx.client().world, payload);
