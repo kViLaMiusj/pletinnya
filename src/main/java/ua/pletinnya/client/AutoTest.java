@@ -192,6 +192,7 @@ public final class AutoTest {
 			add(40, c -> {
 				c.options.hudHidden = true;
 				c.options.setPerspective(Perspective.FIRST_PERSON);
+				cmd(c, "gamemode spectator @me");
 				cmd(c, "tp @me " + (bx - 14) + " 230 -14");
 			});
 			add(40, c -> serverPlayer(c, p -> {
@@ -213,5 +214,6 @@ public final class AutoTest {
 			add(120, c -> { });
 			add(3, c -> shot(c, "structure_" + s));
 		}
+		add(5, c -> { cmd(c, "gamemode creative @me"); c.options.hudHidden = false; });
 	}
 }

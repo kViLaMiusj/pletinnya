@@ -230,14 +230,27 @@ public class WeavingScreen extends Screen {
 		float cond = client != null && client.player != null ? WeavingLaws.effectiveConductivity(client.player, d) : d.conductivity;
 		float risk = client != null && client.player != null ? WeavingLaws.misfireChance(client.player, d, draft, 0, cost) : 0f;
 		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.complexity", cxv, limit), tx, iy, cxv <= limit ? 0xB0FFB0 : 0xFF7070);
-		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.risk", Math.round(risk * 100)), tx + 96, iy, risk < 0.15f ? 0xC8C8C8 : risk < 0.4f ? 0xFFD060 : 0xFF7070);
+		Text riskT = Text.translatable("screen.pletinnya.risk", Math.round(risk * 100));
+		ctx.drawTextWithShadow(textRenderer, riskT, x + 231 - textRenderer.getWidth(riskT), iy, risk < 0.15f ? 0xC8C8C8 : risk < 0.4f ? 0xFFD060 : 0xFF7070);
 		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.cost", (int) Math.ceil(cost), (int) d.mana), tx, iy + 11, cost <= d.mana ? 0x9DB4FF : 0xFF7070);
 		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.conductivity", (int) cond), tx, iy + 22, cost <= cond ? 0xC8C8C8 : 0xFF9040);
-		ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.quality", draft.quality()), tx + 96, iy + 22, draft.quality() > 0 ? 0xFFD27A : 0x8A8090);
+		Text qualT = Text.translatable("screen.pletinnya.quality", draft.quality());
+		ctx.drawTextWithShadow(textRenderer, qualT, x + 231 - textRenderer.getWidth(qualT), iy + 22, draft.quality() > 0 ? 0xFFD27A : 0x8A8090);
 		Text hint = draft.triggerType().minRank > d.rank ? Text.translatable("message.pletinnya.trigger_rank", Ranks.title(draft.triggerType().minRank))
 			: cost > cond ? Text.translatable("screen.pletinnya.warn_overload")
 			: Text.translatable("screen.pletinnya.desc." + draft.formType().id);
-		ctx.drawTextWrapped(textRenderer, hint, tx, iy + 34, 172, 0xA0A0A0);
+		var lines = textRenderer.wrapLines(hint, 168);
+		for (int li = 0; li < Math.min(2, lines.size()); li++) {
+			var line = lines.get(li);
+			if (li == 1 && lines.size() > 2) {
+				// друга лінія з трьома крапками, якщо текст довший
+				StringBuilder sb = new StringBuilder();
+				net.minecraft.text.OrderedText ot = line;
+				ot.accept((idx, style, cp) -> { sb.appendCodePoint(cp); return true; });
+				String cut = textRenderer.trimToWidth(sb.toString(), 168 - textRenderer.getWidth("…")) + "…";
+				ctx.drawTextWithShadow(textRenderer, Text.literal(cut), tx, iy + 34 + li * 10, 0xA0A0A0);
+			} else ctx.drawTextWithShadow(textRenderer, line, tx, iy + 34 + li * 10, 0xA0A0A0);
+		}
 	}
 
 	// =============================================================== РУЧНЕ ПЛЕТІННЯ
