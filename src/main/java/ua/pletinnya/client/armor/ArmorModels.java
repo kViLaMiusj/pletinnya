@@ -2,7 +2,7 @@ package ua.pletinnya.client.armor;
 
 import net.minecraft.client.model.*;
 
-/** Згенеровано tools/art/armor_models3.py — одношаровий одяг ванільної форми. Не редагувати вручну. */
+/** Згенеровано tools/art/armor_models4.py — одношаровий одяг ванільної форми. Не редагувати вручну. */
 public final class ArmorModels {
 	private ArmorModels() {}
 
