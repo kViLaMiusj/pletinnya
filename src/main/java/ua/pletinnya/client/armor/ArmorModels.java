@@ -11,8 +11,8 @@ public final class ArmorModels {
 
 	public static final int TEX_W = 64, TEX_H = 96;
 
-	private static boolean hasBrim(String set) { return switch (set) { case "lightning", "sound", "mana", "holy" -> true; default -> false; }; }
-	private static boolean hasCape(String set) { return switch (set) { case "water", "fire", "wind", "lightning", "ice", "nature", "light", "darkness", "blood", "dragon", "spirit", "holy" -> true; default -> false; }; }
+	private static boolean hasBrim(String set) { return switch (set) { case  -> true; default -> false; }; }
+	private static boolean hasCape(String set) { return switch (set) { case "water", "fire", "wind", "earth", "lightning", "ice", "nature", "sound", "light", "darkness", "blood", "mana", "dragon", "spirit", "holy", "aura" -> true; default -> false; }; }
 
 	public static TexturedModelData create(String set) {
 		ModelData md = new ModelData();
