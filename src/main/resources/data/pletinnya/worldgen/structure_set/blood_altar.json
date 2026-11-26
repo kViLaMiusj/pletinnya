@@ -1,0 +1,14 @@
+{
+ "structures": [
+  {
+   "structure": "pletinnya:blood_altar",
+   "weight": 1
+  }
+ ],
+ "placement": {
+  "type": "minecraft:random_spread",
+  "spacing": 36,
+  "separation": 13,
+  "salt": 22360679
+ }
+}

@@ -7,7 +7,7 @@ printf "online-mode=false\nspawn-protection=0\nlevel-seed=pletinnya\nlevel-name=
 
 echo "=== SERVER ==="
 ( sleep 150
-  for s in mage_tower ley_circle shrine aurora_hut academy_ruins dragon_sanctuary spirit_grove weaver_vault; do
+  for s in mage_tower ley_circle shrine aurora_hut academy_ruins dragon_sanctuary spirit_grove weaver_vault fire_forge frost_spire storm_beacon sun_obelisk shadow_crypt blood_altar wanderer_camp resonance_amphitheater wind_aerie tide_temple; do
     echo "locate structure pletinnya:$s"; sleep 4
   done
   echo "stop" ) | timeout 420 ./gradlew runServer --console=plain > server_out.txt 2>&1 || true

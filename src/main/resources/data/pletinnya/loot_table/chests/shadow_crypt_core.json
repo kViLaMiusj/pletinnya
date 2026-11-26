@@ -1,0 +1,87 @@
+{
+ "type": "minecraft:chest",
+ "pools": [
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 1,
+    "max": 2
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_darkness",
+     "weight": 3
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:weave_eye",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:architect_staff",
+     "weight": 1
+    }
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 2,
+    "max": 4
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:essence_darkness",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 5
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_darkness",
+     "weight": 5
+    }
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 1,
+    "max": 2
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:darkness_helmet",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:darkness_chestplate",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:darkness_leggings",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:darkness_boots",
+     "weight": 2
+    }
+   ]
+  }
+ ]
+}

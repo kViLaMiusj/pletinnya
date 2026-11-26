@@ -185,7 +185,7 @@ public final class AutoTest {
 		add(5, c -> c.setScreen(null));
 		add(10, c -> shot(c, "hud"));
 		// структури: шаблон на рівному майданчику в небі, камера під кутом
-		String[] structs = {"mage_tower", "ley_circle", "shrine", "aurora_hut", "academy_ruins", "dragon_sanctuary", "spirit_grove", "weaver_vault"};
+		String[] structs = {"mage_tower", "ley_circle", "shrine", "aurora_hut", "academy_ruins", "dragon_sanctuary", "spirit_grove", "weaver_vault", "fire_forge", "frost_spire", "storm_beacon", "sun_obelisk", "shadow_crypt", "blood_altar", "wanderer_camp", "resonance_amphitheater", "wind_aerie", "tide_temple"};
 		for (int i = 0; i < structs.length; i++) {
 			final String s = structs[i];
 			final int bx = 600 + i * 64;

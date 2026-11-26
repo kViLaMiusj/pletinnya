@@ -1,0 +1,206 @@
+{
+ "type": "minecraft:chest",
+ "pools": [
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 1,
+    "max": 2
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_ice",
+     "weight": 6
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_water",
+     "weight": 6
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:treatise_basics",
+     "weight": 3
+    }
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 2,
+    "max": 4
+   },
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:essence_ice",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 4
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:essence_water",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 4
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_crystal",
+     "weight": 20,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 8
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "minecraft:book",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 3
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "minecraft:paper",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "minecraft:lapis_lazuli",
+     "weight": 8,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 2,
+        "max": 6
+       }
+      }
+     ]
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:mana_elixir",
+     "weight": 6,
+     "functions": [
+      {
+       "function": "minecraft:set_count",
+       "count": {
+        "type": "minecraft:uniform",
+        "min": 1,
+        "max": 2
+       }
+      }
+     ]
+    }
+   ]
+  },
+  {
+   "rolls": {
+    "type": "minecraft:uniform",
+    "min": 1,
+    "max": 1
+   },
+   "entries": [
+    {
+     "type": "minecraft:empty",
+     "weight": 5
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_ice",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:staff_water",
+     "weight": 2
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:ice_helmet",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:ice_chestplate",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:ice_leggings",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:ice_boots",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:water_helmet",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:water_chestplate",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:water_leggings",
+     "weight": 1
+    },
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:water_boots",
+     "weight": 1
+    }
+   ]
+  }
+ ]
+}
