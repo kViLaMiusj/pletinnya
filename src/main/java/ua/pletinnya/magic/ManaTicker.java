@@ -43,6 +43,14 @@ public final class ManaTicker {
 	private static void second(ServerPlayerEntity p, MageData d) {
 		ServerWorld w = p.getServerWorld();
 		float regen = 0.5f + d.maxMana * 0.01f;
+		MagicPath set = Gear.fullSet(p);
+		if (set == MagicPath.MANA) regen *= 1.5f;
+		if (d.paths.deity == 1) regen *= 1.1f;
+		setBonus(p, d, set);
+		spirit(p, d);
+		if (d.paths.deity > 0 && d.paths.faith < 100f) {
+			d.paths.faith = Math.min(100f, d.paths.faith + (set == MagicPath.HOLY ? 0.1f : 0.03f));
+		}
 
 		// Медитація: присісти й не рухатися. Збирання мани довкілля потребує часу й залежить від місцевості.
 		boolean still = p.isSneaking() && p.isOnGround() && p.getVelocity().horizontalLengthSquared() < 0.001;
@@ -88,6 +96,8 @@ public final class ManaTicker {
 			return;
 		}
 		float cost = 1f + d.rank * 0.5f;
+		if (Gear.fullSet(p, MagicPath.AURA)) cost *= 0.5f;
+		if (p.getMainHandStack().getItem() instanceof ua.pletinnya.item.AuraBladeItem) cost *= 0.7f;
 		if (d.mana < cost) {
 			d.aura = false;
 			d.auraTicks = 0;
@@ -109,6 +119,59 @@ public final class ManaTicker {
 		}
 		p.getServerWorld().spawnParticles(ParticleTypes.CRIT, p.getX(), p.getBodyY(0.5), p.getZ(), 6, 0.3, 0.5, 0.3, 0.1);
 		d.markDirty();
+	}
+
+	private static void eff(ServerPlayerEntity p, net.minecraft.registry.entry.RegistryEntry<net.minecraft.entity.effect.StatusEffect> e, int dur, int amp) {
+		p.addStatusEffect(new StatusEffectInstance(e, dur, amp, true, false, true));
+	}
+
+	/** Властивості повних сетів магічного одягу. */
+	private static void setBonus(ServerPlayerEntity p, MageData d, MagicPath set) {
+		if (set == null) return;
+		switch (set) {
+			case WATER -> {
+				if (p.isTouchingWater()) { eff(p, StatusEffects.WATER_BREATHING, 60, 0); eff(p, StatusEffects.DOLPHINS_GRACE, 60, 0); }
+			}
+			case FIRE, DRAGON -> eff(p, StatusEffects.FIRE_RESISTANCE, 60, 0);
+			case WIND -> {
+				eff(p, StatusEffects.JUMP_BOOST, 60, 0);
+				if (p.getVelocity().y < -0.6) eff(p, StatusEffects.SLOW_FALLING, 40, 0);
+			}
+			case EARTH -> eff(p, StatusEffects.RESISTANCE, 60, 0);
+			case LIGHTNING -> { eff(p, StatusEffects.SPEED, 60, 0); eff(p, StatusEffects.HASTE, 60, 0); }
+			case ICE -> p.setFrozenTicks(0);
+			case NATURE -> {
+				if (p.getHealth() < p.getMaxHealth() && p.age % 120 == 0) eff(p, StatusEffects.REGENERATION, 60, 0);
+			}
+			case SOUND -> {
+				if (p.age % 40 == 0) for (net.minecraft.entity.mob.HostileEntity h : p.getServerWorld().getEntitiesByClass(net.minecraft.entity.mob.HostileEntity.class, p.getBoundingBox().expand(12), e -> true)) {
+					h.addStatusEffect(new StatusEffectInstance(StatusEffects.GLOWING, 50, 0, true, false), p);
+				}
+			}
+			case LIGHT -> eff(p, StatusEffects.NIGHT_VISION, 260, 0);
+			case DARKNESS -> {
+				if (p.isSneaking()) eff(p, StatusEffects.INVISIBILITY, 30, 0);
+			}
+			case BLOOD -> {
+				if (p.getHealth() < p.getMaxHealth() * 0.5f) eff(p, StatusEffects.STRENGTH, 60, 0);
+			}
+			default -> {
+			}
+		}
+	}
+
+	/** Дух допомагає в небезпеці — але лише тим, з ким зв'язок міцний. */
+	private static void spirit(ServerPlayerEntity p, MageData d) {
+		if (d.paths.spirit <= 0 || d.paths.spiritBond < 40) return;
+		long now = p.getServerWorld().getTime();
+		if (p.getHealth() < p.getMaxHealth() * 0.3f && now - d.paths.spiritGift > 2400) {
+			d.paths.spiritGift = now;
+			p.setAbsorptionAmount(Math.max(p.getAbsorptionAmount(), 6f));
+			p.addStatusEffect(new StatusEffectInstance(StatusEffects.REGENERATION, 100, 1));
+			ua.pletinnya.fx.Vfx.send(p.getServerWorld(), ua.pletinnya.fx.Vfx.SPIRIT, d.paths.spirit - 1, p.getPos(), 1.5f);
+			p.sendMessage(Text.translatable("message.pletinnya.spirit_gift", d.paths.spiritElement().displayName()).formatted(Formatting.AQUA), true);
+			d.markDirty();
+		}
 	}
 
 	/** Наскільки щедре довкілля на ману. */

@@ -1,22 +1,22 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:glass_bottle"
-    },
-    {
-      "item": "pletinnya:essence_nature"
-    },
-    {
-      "item": "pletinnya:essence_blood"
-    },
-    {
-      "item": "pletinnya:mana_crystal"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:channel_elixir",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:glass_bottle"
+  },
+  {
+   "item": "pletinnya:essence_nature"
+  },
+  {
+   "item": "pletinnya:essence_blood"
+  },
+  {
+   "item": "pletinnya:mana_crystal"
   }
+ ],
+ "result": {
+  "id": "pletinnya:channel_elixir",
+  "count": 1
+ }
 }

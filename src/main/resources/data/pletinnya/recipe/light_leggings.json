@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "pattern": [
+  "WEW",
+  "W W",
+  "W W"
+ ],
+ "key": {
+  "W": {
+   "tag": "minecraft:wool"
+  },
+  "E": {
+   "item": "pletinnya:essence_light"
+  }
+ },
+ "result": {
+  "id": "pletinnya:light_leggings",
+  "count": 1
+ }
+}

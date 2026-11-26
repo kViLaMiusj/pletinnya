@@ -38,6 +38,7 @@ import org.joml.Vector3f;
 import org.jetbrains.annotations.Nullable;
 import ua.pletinnya.registry.ModAttachments;
 import ua.pletinnya.registry.ModBlocks;
+import ua.pletinnya.fx.Vfx;
 
 import java.util.List;
 
@@ -77,7 +78,6 @@ public final class SpellEffects {
 		} else {
 			area(ctx, pos, Math.max(1.5f, r));
 		}
-		burst(ctx.world(), ctx.element(), pos, 20 + ctx.formula().size() * 6, r * 0.4);
 	}
 
 	// ======================================================================
@@ -201,6 +201,7 @@ public final class SpellEffects {
 				w.spawnParticles(MANA_DUST, t.getX(), t.getBodyY(0.5), t.getZ(), 30, 0.4, 0.5, 0.4, 0);
 			}
 		}
+		Vfx.send(w, Vfx.IMPACT, ctx.element().ordinal(), t.getPos().add(0, t.getHeight() * 0.5, 0), 0.9f);
 		sound(w, t.getPos(), ctx.element());
 	}
 
@@ -267,7 +268,7 @@ public final class SpellEffects {
 				WeaveManager.dispelAnchored(ctx, me);
 			}
 		}
-		burst(w, ctx.element(), me.getPos().add(0, 1, 0), 25, 0.6);
+		Vfx.send(w, Vfx.SELF, ctx.element().ordinal(), me.getPos(), me.getHeight());
 		sound(w, me.getPos(), ctx.element());
 	}
 
@@ -374,7 +375,7 @@ public final class SpellEffects {
 			}
 		}
 
-		burst(w, el, c, (int) (r * r * 8), r * 0.6);
+		Vfx.send(w, Vfx.IMPACT, el.ordinal(), c, r);
 		sound(w, c, el);
 	}
 
@@ -427,7 +428,7 @@ public final class SpellEffects {
 		if (wall == null) {
 			// Поле: періодично діє на область, поки триває плетіння.
 			WeaveManager.field(ctx, Vec3d.ofBottomCenter(base), life);
-			burst(w, el, Vec3d.ofCenter(base), 40, f.radius() * 0.5);
+			Vfx.send(w, Vfx.RUNE, el.ordinal(), Vec3d.ofBottomCenter(base), f.radius());
 			sound(w, Vec3d.ofCenter(base), el);
 			return;
 		}
@@ -447,6 +448,7 @@ public final class SpellEffects {
 			}
 		}
 		WeaveManager.commit(weave);
+		Vfx.send(w, Vfx.WALL, el.ordinal(), Vec3d.ofBottomCenter(base), Vec3d.of(side.getVector()), half * 2 + 1);
 		sound(w, Vec3d.ofCenter(base), el);
 	}
 
@@ -489,7 +491,7 @@ public final class SpellEffects {
 	}
 
 	public static void burst(ServerWorld w, Element el, Vec3d pos, int count, double spread) {
-		w.spawnParticles(particle(el), pos.x, pos.y, pos.z, Math.min(count, 300), spread, spread * 0.6, spread, 0.05);
+		Vfx.send(w, Vfx.IMPACT, el.ordinal(), pos, (float) Math.max(0.5, spread));
 	}
 
 	public static SoundEvent soundOf(Element el) {

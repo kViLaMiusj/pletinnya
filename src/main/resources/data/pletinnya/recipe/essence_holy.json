@@ -1,0 +1,16 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:mana_crystal"
+  },
+  {
+   "item": "minecraft:gold_ingot"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:essence_holy",
+  "count": 2
+ }
+}

@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "pletinnya:block/mana_barrier"
-    }
+ "variants": {
+  "": {
+   "model": "pletinnya:block/mana_barrier"
   }
+ }
 }

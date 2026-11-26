@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "pletinnya:item/essence_lightning"
-  }
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "pletinnya:item/essence_lightning"
+ }
 }

@@ -1,0 +1,24 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "MEM",
+  "SSS",
+  "SSS"
+ ],
+ "key": {
+  "M": {
+   "item": "minecraft:moss_block"
+  },
+  "E": {
+   "item": "pletinnya:essence_spirit"
+  },
+  "S": {
+   "item": "minecraft:mossy_stone_bricks"
+  }
+ },
+ "result": {
+  "id": "pletinnya:spirit_shrine",
+  "count": 1
+ }
+}

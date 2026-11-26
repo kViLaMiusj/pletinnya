@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "pletinnya:block/woven_stone"
-    }
+ "variants": {
+  "": {
+   "model": "pletinnya:block/woven_stone"
   }
+ }
 }

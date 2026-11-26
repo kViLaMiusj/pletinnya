@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "pletinnya:item/channel_elixir"
-  }
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "pletinnya:item/channel_elixir"
+ }
 }

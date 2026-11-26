@@ -22,6 +22,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 import ua.pletinnya.entity.WeaveProjectileEntity;
 import ua.pletinnya.registry.ModAttachments;
+import ua.pletinnya.fx.Vfx;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -123,7 +124,7 @@ public final class WeaveManager {
 			w.expireAt = now + Math.max(1200, f.durationTicks() * 6L);
 		}
 		add(w);
-		ctx.world().spawnParticles(ParticleTypes.ENCHANT, pos.x, pos.y + 0.2, pos.z, 30, 0.4, 0.2, 0.4, 0.5);
+		Vfx.send(ctx.world(), Vfx.RUNE, ctx.element().ordinal(), pos, Math.max(1f, f.radius() * 0.6f));
 	}
 
 	private static void add(Weave w) {
@@ -201,6 +202,7 @@ public final class WeaveManager {
 					if (fire) {
 						WEAVES.remove(w);
 						world.playSound(null, w.pos.x, w.pos.y, w.pos.z, SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK, SoundCategory.PLAYERS, 0.6f, 1.6f);
+						Vfx.send(world, Vfx.RUNE_FIRE, w.formula.element(), w.pos, w.formula.radius());
 						Entity target = anchor;
 						if (target == null && w.formula.formType() == SpellForm.SELF) target = caster;
 						SpellEffects.release(ctx, w.pos, target, w.facing);
@@ -222,8 +224,8 @@ public final class WeaveManager {
 			boolean own = w.owner != null && w.owner.equals(p.getUuid());
 			int perception = WeavingLaws.effectivePerception(p, p.getAttachedOrCreate(ModAttachments.MAGE));
 			if (own || perception >= w.complexity * 1.5f) {
-				world.spawnParticles(p, SpellEffects.particle(w.formula.elementType()), true, c.x, c.y + 0.1, c.z, 3, 0.25, 0.15, 0.25, 0.0);
-				world.spawnParticles(p, ParticleTypes.ENCHANT, true, c.x, c.y + 0.5, c.z, 4, 0.3, 0.3, 0.3, 0.3);
+				world.spawnParticles(p, new ua.pletinnya.fx.FxEffects.Glyph(w.formula.element(), w.formula.elementType().color, 0.35f), true, c.x, c.y + 0.15, c.z, 1, 0.05, 0.02, 0.05, 0.0);
+				world.spawnParticles(p, ParticleTypes.ENCHANT, true, c.x, c.y + 0.5, c.z, 3, 0.3, 0.3, 0.3, 0.3);
 			}
 		}
 	}
@@ -257,6 +259,7 @@ public final class WeaveManager {
 			}
 		}
 		for (Weave w : toRemove) remove(ctx.world(), w);
+		Vfx.send(ctx.world(), Vfx.DISPEL, Element.MANA.ordinal(), center, r);
 
 		for (WeaveProjectileEntity proj : ctx.world().getEntitiesByClass(WeaveProjectileEntity.class, new Box(center, center).expand(r + 1), e -> true)) {
 			Entity owner = proj.getOwner();

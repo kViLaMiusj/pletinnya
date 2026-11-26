@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:block",
+ "random_sequence": "pletinnya:blocks/crystal_lamp",
+ "pools": [
+  {
+   "rolls": 1,
+   "bonus_rolls": 0,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:crystal_lamp"
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:survives_explosion"
+    }
+   ]
+  }
+ ]
+}

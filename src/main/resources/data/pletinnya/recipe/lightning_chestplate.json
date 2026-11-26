@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "pattern": [
+  "W W",
+  "WEW",
+  "WWW"
+ ],
+ "key": {
+  "W": {
+   "tag": "minecraft:wool"
+  },
+  "E": {
+   "item": "pletinnya:essence_lightning"
+  }
+ },
+ "result": {
+  "id": "pletinnya:lightning_chestplate",
+  "count": 1
+ }
+}

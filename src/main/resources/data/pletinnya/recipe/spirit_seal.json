@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:paper"
+  },
+  {
+   "item": "pletinnya:essence_spirit"
+  },
+  {
+   "item": "pletinnya:mana_crystal"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:spirit_seal",
+  "count": 2
+ }
+}

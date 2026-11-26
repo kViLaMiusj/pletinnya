@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:essence_earth"
-    },
-    {
-      "item": "pletinnya:essence_earth"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_earth",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_earth"
+  },
+  {
+   "item": "pletinnya:essence_earth"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_earth",
+  "count": 1
+ }
 }

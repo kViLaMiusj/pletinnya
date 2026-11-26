@@ -1,7 +1,7 @@
 {
-  "variants": {
-    "": {
-      "model": "pletinnya:block/mana_crystal_ore"
-    }
+ "variants": {
+  "": {
+   "model": "pletinnya:block/mana_crystal_ore"
   }
+ }
 }

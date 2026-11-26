@@ -1,8 +1,8 @@
 {
-  "replace": false,
-  "values": [
-    "pletinnya:mana_crystal_ore",
-    "pletinnya:deepslate_mana_crystal_ore",
-    "pletinnya:mana_node"
-  ]
+ "replace": false,
+ "values": [
+  "pletinnya:mana_crystal_ore",
+  "pletinnya:deepslate_mana_crystal_ore",
+  "pletinnya:mana_node"
+ ]
 }

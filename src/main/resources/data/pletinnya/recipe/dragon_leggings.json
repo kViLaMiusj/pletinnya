@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "pattern": [
+  "WEW",
+  "W W",
+  "W W"
+ ],
+ "key": {
+  "W": {
+   "item": "minecraft:leather"
+  },
+  "E": {
+   "item": "pletinnya:essence_dragon"
+  }
+ },
+ "result": {
+  "id": "pletinnya:dragon_leggings",
+  "count": 1
+ }
+}

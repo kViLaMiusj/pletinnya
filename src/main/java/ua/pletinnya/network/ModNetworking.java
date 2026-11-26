@@ -78,7 +78,36 @@ public final class ModNetworking {
 		@Override public Id<? extends CustomPayload> getId() { return ID; }
 	}
 
+	public record DragonSpeakPayload(String phrase) implements CustomPayload {
+		public static final Id<DragonSpeakPayload> ID = new Id<>(Pletinnya.id("dragon_speak"));
+		public static final PacketCodec<RegistryByteBuf, DragonSpeakPayload> CODEC =
+			PacketCodec.tuple(PacketCodecs.STRING, DragonSpeakPayload::phrase, DragonSpeakPayload::new);
+		@Override public Id<? extends CustomPayload> getId() { return ID; }
+	}
+
+	public record PrayPayload(int index) implements CustomPayload {
+		public static final Id<PrayPayload> ID = new Id<>(Pletinnya.id("pray"));
+		public static final PacketCodec<RegistryByteBuf, PrayPayload> CODEC =
+			PacketCodec.tuple(PacketCodecs.VAR_INT, PrayPayload::index, PrayPayload::new);
+		@Override public Id<? extends CustomPayload> getId() { return ID; }
+	}
+
 	public static void init() {
+		PayloadTypeRegistry.playS2C().register(ua.pletinnya.fx.Vfx.Payload.ID, ua.pletinnya.fx.Vfx.Payload.CODEC);
+		PayloadTypeRegistry.playC2S().register(DragonSpeakPayload.ID, DragonSpeakPayload.CODEC);
+		PayloadTypeRegistry.playC2S().register(PrayPayload.ID, PrayPayload.CODEC);
+		ServerPlayNetworking.registerGlobalReceiver(DragonSpeakPayload.ID, (payload, ctx) -> {
+			ServerPlayerEntity p = ctx.player();
+			MageData d = p.getAttachedOrCreate(ModAttachments.MAGE);
+			String phrase = payload.phrase().length() > 80 ? payload.phrase().substring(0, 80) : payload.phrase();
+			ua.pletinnya.magic.DragonTongue.Result r = ua.pletinnya.magic.DragonTongue.parse(phrase, d.paths);
+			if (r.error() != null) {
+				p.sendMessage(r.error().copy().formatted(Formatting.RED), true);
+				return;
+			}
+			SpellCaster.castDragon(p, d, r.formula());
+		});
+		ServerPlayNetworking.registerGlobalReceiver(PrayPayload.ID, (payload, ctx) -> ua.pletinnya.magic.Prayers.pray(ctx.player(), payload.index()));
 		PayloadTypeRegistry.playS2C().register(SyncMagePayload.ID, SyncMagePayload.CODEC);
 		PayloadTypeRegistry.playS2C().register(OpenTabletPayload.ID, OpenTabletPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(CastPayload.ID, CastPayload.CODEC);

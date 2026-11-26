@@ -1,0 +1,8 @@
+{
+ "parent": "minecraft:block/cube_bottom_top",
+ "textures": {
+  "top": "pletinnya:block/holy_altar_top",
+  "side": "pletinnya:block/holy_altar_side",
+  "bottom": "pletinnya:block/holy_altar_bottom"
+ }
+}

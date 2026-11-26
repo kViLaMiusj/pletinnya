@@ -32,6 +32,7 @@ public class Pletinnya implements ModInitializer {
 	@Override
 	public void onInitialize() {
 		ModAttachments.init();
+		ua.pletinnya.fx.ModParticles.init();
 		ModBlocks.init();
 		ModItems.init();
 		ModEntities.init();
@@ -58,6 +59,13 @@ public class Pletinnya implements ModInitializer {
 			d.markDirty();
 		});
 		ServerLifecycleEvents.SERVER_STOPPING.register(WeaveManager::clearAll);
+		net.fabricmc.fabric.api.event.player.AttackEntityCallback.EVENT.register((player, world, hand, entity, hit) -> {
+			if (!world.isClient && player instanceof net.minecraft.server.network.ServerPlayerEntity sp
+				&& entity instanceof net.minecraft.entity.LivingEntity le && le.isAlive()) {
+				ua.pletinnya.magic.AuraTechniques.onHit(sp, le);
+			}
+			return net.minecraft.util.ActionResult.PASS;
+		});
 		CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> PletinnyaCommand.register(dispatcher));
 
 		LOGGER.info("Плетіння пробуджується.");

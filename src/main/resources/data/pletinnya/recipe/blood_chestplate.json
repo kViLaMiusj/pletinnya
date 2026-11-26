@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "pattern": [
+  "W W",
+  "WEW",
+  "WWW"
+ ],
+ "key": {
+  "W": {
+   "item": "minecraft:leather"
+  },
+  "E": {
+   "item": "pletinnya:essence_blood"
+  }
+ },
+ "result": {
+  "id": "pletinnya:blood_chestplate",
+  "count": 1
+ }
+}

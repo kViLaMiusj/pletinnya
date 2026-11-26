@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:essence_light"
-    },
-    {
-      "item": "pletinnya:essence_light"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_light",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_light"
+  },
+  {
+   "item": "pletinnya:essence_light"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_light",
+  "count": 1
+ }
 }

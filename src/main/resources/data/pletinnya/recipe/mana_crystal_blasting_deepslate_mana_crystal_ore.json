@@ -1,12 +1,12 @@
 {
-  "type": "minecraft:blasting",
-  "category": "misc",
-  "ingredient": {
-    "item": "pletinnya:deepslate_mana_crystal_ore"
-  },
-  "result": {
-    "id": "pletinnya:mana_crystal"
-  },
-  "experience": 0.7,
-  "cookingtime": 100
+ "type": "minecraft:blasting",
+ "category": "misc",
+ "ingredient": {
+  "item": "pletinnya:deepslate_mana_crystal_ore"
+ },
+ "result": {
+  "id": "pletinnya:mana_crystal"
+ },
+ "experience": 0.7,
+ "cookingtime": 100
 }

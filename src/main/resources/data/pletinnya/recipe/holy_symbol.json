@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  " G ",
+  "GEG",
+  " G "
+ ],
+ "key": {
+  "G": {
+   "item": "minecraft:gold_ingot"
+  },
+  "E": {
+   "item": "pletinnya:essence_holy"
+  }
+ },
+ "result": {
+  "id": "pletinnya:holy_symbol",
+  "count": 1
+ }
+}

@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "pletinnya:mana_crystal"
-    },
-    {
-      "item": "minecraft:snowball"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:essence_ice",
-    "count": 2
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:mana_crystal"
+  },
+  {
+   "item": "minecraft:snowball"
   }
+ ],
+ "result": {
+  "id": "pletinnya:essence_ice",
+  "count": 2
+ }
 }

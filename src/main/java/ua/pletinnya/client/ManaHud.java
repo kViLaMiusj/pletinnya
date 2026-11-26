@@ -45,6 +45,10 @@ public final class ManaHud {
 			ctx.drawTextWithShadow(tr, Text.translatable("hud.pletinnya.channels", d.channelDamage / 20), x, y, 0xFF5555);
 			y += 11;
 		}
+		if (d.paths.deity > 0) {
+			ctx.drawTextWithShadow(tr, Text.translatable("hud.pletinnya.faith", (int) d.paths.faith), x, y, 0xF2D27A);
+			y += 11;
+		}
 		if (d.aura) {
 			ctx.drawTextWithShadow(tr, Text.translatable("hud.pletinnya.aura", d.auraTicks / 20), x, y, d.auraTicks > 1800 ? 0xFF7733 : 0xFFAA00);
 		}

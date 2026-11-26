@@ -107,6 +107,7 @@ public final class Ranks {
 		d.rank++;
 		d.markDirty();
 		player.sendMessage(Text.translatable("message.pletinnya.rank_up", title(d.rank)).formatted(Formatting.GOLD), false);
+		ua.pletinnya.fx.Vfx.send(player.getServerWorld(), ua.pletinnya.fx.Vfx.RANK_UP, d.rank, player.getPos(), 2f);
 		player.getWorld().playSound(null, player.getX(), player.getY(), player.getZ(),
 			SoundEvents.UI_TOAST_CHALLENGE_COMPLETE, SoundCategory.PLAYERS, 1f, 1f);
 	}

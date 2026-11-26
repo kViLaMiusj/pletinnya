@@ -3,7 +3,6 @@ package ua.pletinnya.magic;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.tag.BiomeTags;
 import net.minecraft.registry.tag.FluidTags;
 import net.minecraft.text.Text;
@@ -35,7 +34,9 @@ public final class WeavingLaws {
 		c *= f.triggerType().costMul;
 		c *= environmentFactor(p, el);
 		c *= 1f - Math.min(d.precision, 100) * 0.003f;
-		c *= staffCostMul(p);
+		c *= Gear.costMul(p, el);
+		c *= 1f - f.quality() * 0.001f;
+		if (d.paths.spirit > 0 && d.paths.spiritElement() == el) c *= 0.85f;
 		return Math.max(1f, c);
 	}
 
@@ -72,29 +73,19 @@ public final class WeavingLaws {
 		return false;
 	}
 
-	// ---------- Фокуси (посохи) ----------
-
-	private static StaffItem staff(PlayerEntity p) {
-		for (Hand h : Hand.values()) {
-			ItemStack s = p.getStackInHand(h);
-			if (s.getItem() instanceof StaffItem st) return st;
-		}
-		return null;
-	}
+	// ---------- Фокуси й одяг ----------
 
 	public static float staffCostMul(PlayerEntity p) {
-		StaffItem s = staff(p);
+		StaffItem s = Gear.staff(p);
 		return s == null ? 1f : s.costMul;
 	}
 
 	public static int staffConductivity(PlayerEntity p) {
-		StaffItem s = staff(p);
-		return s == null ? 0 : s.conductivityBonus;
+		return Gear.conductivityBonus(p);
 	}
 
 	public static int staffStability(PlayerEntity p) {
-		StaffItem s = staff(p);
-		return s == null ? 0 : s.stability;
+		return Gear.stability(p);
 	}
 
 	// ---------- Характеристики з урахуванням стану ----------
@@ -111,6 +102,9 @@ public final class WeavingLaws {
 		for (Hand h : Hand.values()) {
 			if (p.getStackInHand(h).getItem() instanceof WeaveEyeItem) bonus = 40;
 		}
+		if (Gear.fullSet(p, MagicPath.SOUND)) bonus += 20;
+		if (Gear.fullSet(p, MagicPath.SPIRIT)) bonus += 30;
+		if (d.paths.deity == 1) bonus += 10;
 		return d.perception + bonus;
 	}
 
@@ -140,6 +134,8 @@ public final class WeavingLaws {
 		float overload = cost / Math.max(1f, effectiveConductivity(p, d));
 		if (overload > 1f) ch += 0.15f * (overload - 1f) + 0.1f;
 		if (d.channelDamage > 0) ch += 0.1f;
+		ch *= 1f - f.quality() * 0.007f;
+		if (d.paths.spirit > 0 && d.paths.spiritElement() == f.elementType()) ch *= 0.3f;
 		return Math.max(0f, Math.min(0.85f, ch));
 	}
 }

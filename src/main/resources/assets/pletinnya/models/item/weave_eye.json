@@ -1,6 +1,6 @@
 {
-  "parent": "minecraft:item/generated",
-  "textures": {
-    "layer0": "pletinnya:item/weave_eye"
-  }
+ "parent": "minecraft:item/generated",
+ "textures": {
+  "layer0": "pletinnya:item/weave_eye"
+ }
 }

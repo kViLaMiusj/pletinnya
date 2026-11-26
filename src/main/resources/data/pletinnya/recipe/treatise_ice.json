@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:essence_ice"
-    },
-    {
-      "item": "pletinnya:essence_ice"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_ice",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_ice"
+  },
+  {
+   "item": "pletinnya:essence_ice"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_ice",
+  "count": 1
+ }
 }

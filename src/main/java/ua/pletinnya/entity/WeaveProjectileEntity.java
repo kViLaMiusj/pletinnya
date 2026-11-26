@@ -58,7 +58,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		return formula.complexity();
 	}
 
-	private Element element() {
+	public Element element() {
 		return getStack().getItem() instanceof EssenceItem e ? e.element : Element.MANA;
 	}
 
@@ -67,10 +67,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		super.tick();
 		World world = getWorld();
 		if (world.isClient) {
-			for (int i = 0; i < 2; i++) {
-				world.addParticle(SpellEffects.particle(element()), getX(), getY() + 0.1, getZ(),
-					(random.nextDouble() - 0.5) * 0.05, (random.nextDouble() - 0.5) * 0.05, (random.nextDouble() - 0.5) * 0.05);
-			}
+			ua.pletinnya.fx.ProjectileTrails.trail(world, getPos(), getVelocity(), element(), age);
 			return;
 		}
 		if (isRemoved()) return;

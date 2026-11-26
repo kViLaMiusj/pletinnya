@@ -21,12 +21,18 @@ import java.util.List;
  * зменшує ціну, розширює провідність і стабілізує складні формули.
  */
 public class StaffItem extends Item {
+	@org.jetbrains.annotations.Nullable public final ua.pletinnya.magic.MagicPath path;
 	public final float costMul;
 	public final int conductivityBonus;
 	public final int stability;
 
 	public StaffItem(float costMul, int conductivityBonus, int stability, Settings settings) {
+		this(null, costMul, conductivityBonus, stability, settings);
+	}
+
+	public StaffItem(@org.jetbrains.annotations.Nullable ua.pletinnya.magic.MagicPath path, float costMul, int conductivityBonus, int stability, Settings settings) {
 		super(settings);
+		this.path = path;
 		this.costMul = costMul;
 		this.conductivityBonus = conductivityBonus;
 		this.stability = stability;
@@ -51,6 +57,11 @@ public class StaffItem extends Item {
 
 	@Override
 	public void appendTooltip(ItemStack stack, TooltipContext context, List<Text> tooltip, TooltipType type) {
+		if (path != null) {
+			tooltip.add(Text.translatable("tooltip.pletinnya.staff_path", path.displayName()).withColor(path.color));
+			if (path.element != null) tooltip.add(Text.translatable("tooltip.pletinnya.staff_affinity").formatted(Formatting.GRAY));
+			else tooltip.add(Text.translatable("tooltip.pletinnya.focus_" + path.id).formatted(Formatting.GRAY));
+		}
 		tooltip.add(Text.translatable("tooltip.pletinnya.staff_cost", Math.round((1f - costMul) * 100)).formatted(Formatting.BLUE));
 		if (conductivityBonus > 0) tooltip.add(Text.translatable("tooltip.pletinnya.staff_conductivity", conductivityBonus).formatted(Formatting.BLUE));
 		if (stability > 0) tooltip.add(Text.translatable("tooltip.pletinnya.staff_stability", stability).formatted(Formatting.BLUE));

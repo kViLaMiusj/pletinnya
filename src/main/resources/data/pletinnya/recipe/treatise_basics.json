@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:mana_crystal"
-    },
-    {
-      "item": "pletinnya:mana_crystal"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_basics",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:mana_crystal"
+  },
+  {
+   "item": "pletinnya:mana_crystal"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_basics",
+  "count": 1
+ }
 }

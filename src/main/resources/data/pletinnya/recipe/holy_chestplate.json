@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "equipment",
+ "pattern": [
+  "W W",
+  "WEW",
+  "WWW"
+ ],
+ "key": {
+  "W": {
+   "tag": "minecraft:wool"
+  },
+  "E": {
+   "item": "pletinnya:essence_holy"
+  }
+ },
+ "result": {
+  "id": "pletinnya:holy_chestplate",
+  "count": 1
+ }
+}

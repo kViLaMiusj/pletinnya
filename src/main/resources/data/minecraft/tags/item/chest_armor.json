@@ -1,0 +1,21 @@
+{
+ "replace": false,
+ "values": [
+  "pletinnya:water_chestplate",
+  "pletinnya:fire_chestplate",
+  "pletinnya:wind_chestplate",
+  "pletinnya:earth_chestplate",
+  "pletinnya:lightning_chestplate",
+  "pletinnya:ice_chestplate",
+  "pletinnya:nature_chestplate",
+  "pletinnya:sound_chestplate",
+  "pletinnya:light_chestplate",
+  "pletinnya:darkness_chestplate",
+  "pletinnya:blood_chestplate",
+  "pletinnya:mana_chestplate",
+  "pletinnya:dragon_chestplate",
+  "pletinnya:spirit_chestplate",
+  "pletinnya:holy_chestplate",
+  "pletinnya:aura_chestplate"
+ ]
+}

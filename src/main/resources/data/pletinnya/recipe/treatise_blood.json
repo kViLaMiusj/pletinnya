@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:essence_blood"
-    },
-    {
-      "item": "pletinnya:essence_blood"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_blood",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_blood"
+  },
+  {
+   "item": "pletinnya:essence_blood"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_blood",
+  "count": 1
+ }
 }

@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:block",
+ "random_sequence": "pletinnya:blocks/chiseled_rune_stone",
+ "pools": [
+  {
+   "rolls": 1,
+   "bonus_rolls": 0,
+   "entries": [
+    {
+     "type": "minecraft:item",
+     "name": "pletinnya:chiseled_rune_stone"
+    }
+   ],
+   "conditions": [
+    {
+     "condition": "minecraft:survives_explosion"
+    }
+   ]
+  }
+ ]
+}

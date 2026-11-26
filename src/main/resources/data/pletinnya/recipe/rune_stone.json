@@ -1,21 +1,21 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "SSS",
-    "SCS",
-    "SSS"
-  ],
-  "key": {
-    "S": {
-      "item": "minecraft:stone_bricks"
-    },
-    "C": {
-      "item": "pletinnya:mana_crystal"
-    }
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "SSS",
+  "SCS",
+  "SSS"
+ ],
+ "key": {
+  "S": {
+   "item": "minecraft:stone_bricks"
   },
-  "result": {
-    "id": "pletinnya:rune_stone",
-    "count": 8
+  "C": {
+   "item": "pletinnya:mana_crystal"
   }
+ },
+ "result": {
+  "id": "pletinnya:rune_stone",
+  "count": 8
+ }
 }

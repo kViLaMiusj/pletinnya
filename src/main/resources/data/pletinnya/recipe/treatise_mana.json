@@ -1,19 +1,19 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "minecraft:book"
-    },
-    {
-      "item": "pletinnya:essence_mana"
-    },
-    {
-      "item": "pletinnya:essence_mana"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:treatise_mana",
-    "count": 1
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_mana"
+  },
+  {
+   "item": "pletinnya:essence_mana"
   }
+ ],
+ "result": {
+  "id": "pletinnya:treatise_mana",
+  "count": 1
+ }
 }

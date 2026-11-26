@@ -33,7 +33,8 @@ public class MageData {
 		Codec.INT.fieldOf("feats").forGetter(d -> d.feats),
 		Codec.INT.fieldOf("casts").forGetter(d -> d.casts),
 		Codec.BOOL.fieldOf("aura").forGetter(d -> d.aura),
-		Codec.INT.fieldOf("aura_ticks").forGetter(d -> d.auraTicks)
+		Codec.INT.fieldOf("aura_ticks").forGetter(d -> d.auraTicks),
+		PathData.CODEC.optionalFieldOf("paths").forGetter(d -> java.util.Optional.of(d.paths))
 	).apply(i, MageData::new));
 
 	public float mana;
@@ -50,17 +51,19 @@ public class MageData {
 	public int casts;
 	public boolean aura;
 	public int auraTicks;
+	public final PathData paths;
 
 	private transient boolean dirty = true;
 
 	public MageData() {
-		this(50f, 50, 15, 5, 5, 1, 0, List.of(), List.of(), 0, 0, 0, false, 0);
+		this(50f, 50, 15, 5, 5, 1, 0, List.of(), List.of(), 0, 0, 0, false, 0, java.util.Optional.empty());
 		spells.set(0, new SpellFormula("Іскра", Element.FIRE.ordinal(), SpellForm.PROJECTILE.ordinal(), 2, 1, 2, 1, 0));
 		spells.set(1, new SpellFormula("Подих вітру", Element.WIND.ordinal(), SpellForm.TOUCH.ordinal(), 2, 1, 1, 1, 0));
 	}
 
 	public MageData(float mana, int maxMana, int conductivity, int precision, int perception, int rank, int channelDamage,
-					List<Integer> xp, List<SpellFormula> spells, int selected, int feats, int casts, boolean aura, int auraTicks) {
+					List<Integer> xp, List<SpellFormula> spells, int selected, int feats, int casts, boolean aura, int auraTicks,
+					java.util.Optional<PathData> paths) {
 		this.mana = mana;
 		this.maxMana = maxMana;
 		this.conductivity = conductivity;
@@ -77,6 +80,7 @@ public class MageData {
 		this.casts = casts;
 		this.aura = aura;
 		this.auraTicks = auraTicks;
+		this.paths = paths.orElseGet(PathData::new);
 	}
 
 	public void markDirty() { dirty = true; }

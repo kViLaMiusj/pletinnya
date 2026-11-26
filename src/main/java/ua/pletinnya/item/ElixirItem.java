@@ -20,7 +20,7 @@ import java.util.List;
 
 /** Еліксири: відновлення мани або загоєння пошкоджених каналів. */
 public class ElixirItem extends Item {
-	public enum Kind { MANA, CHANNELS }
+	public enum Kind { MANA, CHANNELS, FAITH }
 
 	private final Kind kind;
 
@@ -50,6 +50,8 @@ public class ElixirItem extends Item {
 			MageData d = player.getAttachedOrCreate(ModAttachments.MAGE);
 			if (kind == Kind.MANA) {
 				d.mana = Math.min(d.maxMana, d.mana + 100);
+			} else if (kind == Kind.FAITH) {
+				d.paths.faith = Math.min(100f, d.paths.faith + 40f);
 			} else {
 				d.channelDamage = 0;
 				player.heal(4f);

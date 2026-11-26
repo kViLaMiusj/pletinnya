@@ -1,0 +1,22 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:diamond_sword"
+  },
+  {
+   "item": "pletinnya:essence_aura"
+  },
+  {
+   "item": "pletinnya:essence_aura"
+  },
+  {
+   "item": "pletinnya:mana_crystal_block"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:aura_blade",
+  "count": 1
+ }
+}

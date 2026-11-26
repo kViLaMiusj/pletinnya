@@ -1,0 +1,25 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:apprentice_staff"
+  },
+  {
+   "item": "pletinnya:essence_lightning"
+  },
+  {
+   "item": "pletinnya:essence_lightning"
+  },
+  {
+   "item": "pletinnya:essence_lightning"
+  },
+  {
+   "item": "pletinnya:mana_crystal_block"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:staff_lightning",
+  "count": 1
+ }
+}

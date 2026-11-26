@@ -1,12 +1,18 @@
 {
-  "replace": false,
-  "values": [
-    "pletinnya:mana_crystal_ore",
-    "pletinnya:deepslate_mana_crystal_ore",
-    "pletinnya:mana_crystal_block",
-    "pletinnya:rune_stone",
-    "pletinnya:mana_node",
-    "pletinnya:woven_stone",
-    "pletinnya:mana_barrier"
-  ]
+ "replace": false,
+ "values": [
+  "pletinnya:mana_crystal_ore",
+  "pletinnya:deepslate_mana_crystal_ore",
+  "pletinnya:mana_crystal_block",
+  "pletinnya:rune_stone",
+  "pletinnya:rune_stone_bricks",
+  "pletinnya:chiseled_rune_stone",
+  "pletinnya:mana_node",
+  "pletinnya:mana_barrier",
+  "pletinnya:woven_stone",
+  "pletinnya:crystal_lamp",
+  "pletinnya:holy_altar",
+  "pletinnya:spirit_shrine",
+  "pletinnya:mana_crystal_cluster"
+ ]
 }

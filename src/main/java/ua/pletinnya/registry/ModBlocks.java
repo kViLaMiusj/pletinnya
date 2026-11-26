@@ -11,7 +11,10 @@ import net.minecraft.registry.Registry;
 import net.minecraft.sound.BlockSoundGroup;
 import net.minecraft.util.math.intprovider.UniformIntProvider;
 import ua.pletinnya.Pletinnya;
+import ua.pletinnya.block.CrystalClusterBlock;
+import ua.pletinnya.block.HolyAltarBlock;
 import ua.pletinnya.block.ManaNodeBlock;
+import ua.pletinnya.block.SpiritShrineBlock;
 
 public final class ModBlocks {
 	private ModBlocks() {}
@@ -33,6 +36,21 @@ public final class ModBlocks {
 			.suffocates((s, w, p) -> false).blockVision((s, w, p) -> false)));
 	public static final Block WOVEN_STONE = register("woven_stone",
 		new Block(AbstractBlock.Settings.copy(Blocks.STONE).strength(2f, 6f).dropsNothing().pistonBehavior(PistonBehavior.BLOCK)));
+
+	public static final Block RUNE_STONE_BRICKS = register("rune_stone_bricks",
+		new Block(AbstractBlock.Settings.copy(Blocks.STONE_BRICKS)));
+	public static final Block CHISELED_RUNE_STONE = register("chiseled_rune_stone",
+		new Block(AbstractBlock.Settings.copy(Blocks.CHISELED_STONE_BRICKS).luminance(s -> 6)));
+	public static final Block MANA_GLASS = register("mana_glass",
+		new TransparentBlock(AbstractBlock.Settings.copy(Blocks.GLASS).luminance(s -> 3)));
+	public static final Block CRYSTAL_LAMP = register("crystal_lamp",
+		new Block(AbstractBlock.Settings.copy(Blocks.SEA_LANTERN).luminance(s -> 15)));
+	public static final Block MANA_CRYSTAL_CLUSTER = register("mana_crystal_cluster",
+		new CrystalClusterBlock(AbstractBlock.Settings.copy(Blocks.AMETHYST_CLUSTER).luminance(s -> 6).nonOpaque()));
+	public static final Block HOLY_ALTAR = register("holy_altar",
+		new HolyAltarBlock(AbstractBlock.Settings.copy(Blocks.CHISELED_QUARTZ_BLOCK).luminance(s -> 9)));
+	public static final Block SPIRIT_SHRINE = register("spirit_shrine",
+		new SpiritShrineBlock(AbstractBlock.Settings.copy(Blocks.MOSSY_STONE_BRICKS).luminance(s -> 10)));
 
 	private static Block register(String name, Block block) {
 		return Registry.register(Registries.BLOCK, Pletinnya.id(name), block);

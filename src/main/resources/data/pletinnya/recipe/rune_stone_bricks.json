@@ -1,0 +1,17 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "RR",
+  "RR"
+ ],
+ "key": {
+  "R": {
+   "item": "pletinnya:rune_stone"
+  }
+ },
+ "result": {
+  "id": "pletinnya:rune_stone_bricks",
+  "count": 4
+ }
+}

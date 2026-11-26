@@ -1,0 +1,19 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "minecraft:book"
+  },
+  {
+   "item": "pletinnya:essence_dragon"
+  },
+  {
+   "item": "minecraft:gold_ingot"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:dragon_codex",
+  "count": 1
+ }
+}

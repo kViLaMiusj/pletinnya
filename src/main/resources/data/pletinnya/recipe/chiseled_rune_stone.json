@@ -1,0 +1,21 @@
+{
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "B",
+  "C",
+  "B"
+ ],
+ "key": {
+  "B": {
+   "item": "pletinnya:rune_stone_bricks"
+  },
+  "C": {
+   "item": "pletinnya:mana_crystal"
+  }
+ },
+ "result": {
+  "id": "pletinnya:chiseled_rune_stone",
+  "count": 2
+ }
+}

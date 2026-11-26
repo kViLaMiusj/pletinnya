@@ -1,24 +1,24 @@
 {
-  "type": "minecraft:crafting_shaped",
-  "category": "misc",
-  "pattern": [
-    "SCS",
-    "CBC",
-    "SCS"
-  ],
-  "key": {
-    "S": {
-      "item": "minecraft:smooth_stone"
-    },
-    "C": {
-      "item": "pletinnya:mana_crystal"
-    },
-    "B": {
-      "item": "minecraft:book"
-    }
+ "type": "minecraft:crafting_shaped",
+ "category": "misc",
+ "pattern": [
+  "SCS",
+  "CBC",
+  "SCS"
+ ],
+ "key": {
+  "S": {
+   "item": "minecraft:smooth_stone"
   },
-  "result": {
-    "id": "pletinnya:weaving_tablet",
-    "count": 1
+  "C": {
+   "item": "pletinnya:mana_crystal"
+  },
+  "B": {
+   "item": "minecraft:book"
   }
+ },
+ "result": {
+  "id": "pletinnya:weaving_tablet",
+  "count": 1
+ }
 }

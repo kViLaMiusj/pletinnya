@@ -1,13 +1,13 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "pletinnya:mana_crystal_block"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:mana_crystal",
-    "count": 9
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:mana_crystal_block"
   }
+ ],
+ "result": {
+  "id": "pletinnya:mana_crystal",
+  "count": 9
+ }
 }

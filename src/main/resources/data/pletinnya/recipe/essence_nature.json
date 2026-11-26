@@ -1,16 +1,16 @@
 {
-  "type": "minecraft:crafting_shapeless",
-  "category": "misc",
-  "ingredients": [
-    {
-      "item": "pletinnya:mana_crystal"
-    },
-    {
-      "item": "minecraft:wheat_seeds"
-    }
-  ],
-  "result": {
-    "id": "pletinnya:essence_nature",
-    "count": 2
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:mana_crystal"
+  },
+  {
+   "item": "minecraft:wheat_seeds"
   }
+ ],
+ "result": {
+  "id": "pletinnya:essence_nature",
+  "count": 2
+ }
 }

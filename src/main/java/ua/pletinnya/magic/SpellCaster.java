@@ -22,6 +22,7 @@ import net.minecraft.util.math.random.Random;
 import org.jetbrains.annotations.Nullable;
 import ua.pletinnya.entity.WeaveProjectileEntity;
 import ua.pletinnya.registry.ModAttachments;
+import ua.pletinnya.fx.Vfx;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -42,6 +43,42 @@ public final class SpellCaster {
 			return;
 		}
 		cast(p, d, f);
+	}
+
+	/** Драконяча мова: без розрахунків і без помилок, але тіло платить за навантаження. */
+	public static void castDragon(ServerPlayerEntity p, MageData d, SpellFormula f) {
+		if (p.isSpectator() || !p.isAlive()) return;
+		long now = WeaveManager.now();
+		Long last = LAST_CAST.get(p.getUuid());
+		if (last != null && now - last < CAST_COOLDOWN * 2) return;
+		float cost = WeavingLaws.cost(p, d, f) * (Gear.fullSet(p, MagicPath.DRAGON) ? 0.9f : 1.3f);
+		if (!p.isCreative() && d.mana < cost) {
+			p.sendMessage(Text.translatable("message.pletinnya.no_mana", (int) Math.ceil(cost), (int) d.mana).formatted(Formatting.BLUE), true);
+			return;
+		}
+		LAST_CAST.put(p.getUuid(), now);
+		if (!p.isCreative()) d.mana -= cost;
+		ServerWorld w = p.getServerWorld();
+		float strain = 1f + f.power() * 0.6f;
+		float cond = WeavingLaws.effectiveConductivity(p, d);
+		if (cost > cond) strain += (cost / cond - 1f) * 3f;
+		if (Gear.holdingFocus(p, MagicPath.DRAGON)) strain *= 0.5f;
+		if (d.paths.deity == 3) strain *= 0.5f;
+		if (Gear.fullSet(p, MagicPath.DRAGON)) strain *= 0.6f;
+		if (!p.isCreative()) {
+			p.damage(w.getDamageSources().magic(), strain);
+			p.addExhaustion(2f);
+		}
+		w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.6f, 1.5f);
+		Vfx.send(w, Vfx.DRAGON, f.element(), p.getEyePos(), p.getRotationVec(1f), f.power());
+		for (ServerPlayerEntity o : w.getPlayers()) {
+			if (o.squaredDistanceTo(p) < 48 * 48) {
+				o.sendMessage(Text.literal("«" + f.name() + "»").formatted(Formatting.GOLD, Formatting.BOLD), true);
+			}
+		}
+		execute(p, f, f.power());
+		d.addXp(f.elementType(), f.complexity() / 2);
+		d.markDirty();
 	}
 
 	public static void cast(ServerPlayerEntity p, MageData d, SpellFormula f) {
@@ -85,6 +122,7 @@ public final class SpellCaster {
 			p.damage(w.getDamageSources().magic(), (overload - 1f) * 3f);
 			d.channelDamage += (int) ((overload - 1f) * 400) + 100;
 			p.sendMessage(Text.translatable("message.pletinnya.overload").formatted(Formatting.DARK_RED), false);
+			Vfx.send(w, Vfx.OVERLOAD, f.element(), p.getPos(), 1f);
 			if (overload > 3f) {
 				w.spawnParticles(ParticleTypes.LARGE_SMOKE, p.getX(), p.getBodyY(0.6), p.getZ(), 20, 0.3, 0.4, 0.3, 0.02);
 				p.sendMessage(Text.translatable("message.pletinnya.overload_fail").formatted(Formatting.DARK_RED), true);
@@ -99,6 +137,7 @@ public final class SpellCaster {
 		boolean misfired = false;
 		if (rnd.nextFloat() < chance) {
 			misfired = true;
+			Vfx.send(w, Vfx.MISFIRE, f.element(), p.getPos().add(0, 1.2, 0), 1f);
 			float roll = rnd.nextFloat();
 			if (roll < 0.4f) {
 				w.spawnParticles(ParticleTypes.SMOKE, p.getX(), p.getBodyY(0.7), p.getZ(), 15, 0.3, 0.3, 0.3, 0.02);
@@ -121,6 +160,17 @@ public final class SpellCaster {
 			}
 		}
 
+		PathData pd = d.paths;
+		if (pd.spirit > 0 && pd.spiritElement() == effective.elementType()) {
+			pd.spiritBond = Math.min(100, pd.spiritBond + 1);
+			float will = 0.15f - pd.spiritBond * 0.001f;
+			if (rnd.nextFloat() < will) {
+				SpellForm nf = SpellForm.byIndex(rnd.nextInt(SpellForm.values().length));
+				effective = effective.withForm(nf.ordinal());
+				power *= 1.2f;
+				p.sendMessage(Text.translatable("message.pletinnya.spirit_will", nf.displayName()).formatted(Formatting.AQUA), true);
+			}
+		}
 		execute(p, effective, power);
 		grow(p, d, f, cost, cond, chance, misfired);
 		Ranks.checkTrial(p, d);
@@ -131,6 +181,7 @@ public final class SpellCaster {
 		SpellContext ctx = new SpellContext(w, p, f, power);
 		Direction facing = p.getHorizontalFacing();
 		boolean now = f.triggerType() == SpellTrigger.IMMEDIATE;
+		Vfx.send(w, Vfx.CAST, f.element(), p.getPos(), 1.3f + f.complexity() * 0.04f);
 
 		switch (f.formType()) {
 			case PROJECTILE -> {

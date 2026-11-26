@@ -1,0 +1,22 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:weaver_staff"
+  },
+  {
+   "item": "pletinnya:essence_holy"
+  },
+  {
+   "item": "pletinnya:essence_holy"
+  },
+  {
+   "item": "minecraft:gold_block"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:holy_sceptre",
+  "count": 1
+ }
+}

@@ -1,0 +1,22 @@
+{
+ "type": "minecraft:crafting_shapeless",
+ "category": "misc",
+ "ingredients": [
+  {
+   "item": "pletinnya:weaver_staff"
+  },
+  {
+   "item": "pletinnya:essence_spirit"
+  },
+  {
+   "item": "pletinnya:essence_spirit"
+  },
+  {
+   "item": "minecraft:soul_lantern"
+  }
+ ],
+ "result": {
+  "id": "pletinnya:spirit_lantern",
+  "count": 1
+ }
+}
