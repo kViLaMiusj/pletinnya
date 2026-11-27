@@ -50,7 +50,7 @@ public final class ClientAnims {
 		}
 		if (layer == null) return;
 		KeyframeAnimation anim = build(kind, holdsStaff(player), player.getMainArm() == Arm.LEFT, power);
-		KeyframeAnimationPlayer kp = new KeyframeAnimationPlayer(anim).setFirstPersonMode(FirstPersonMode.VANILLA);
+		KeyframeAnimationPlayer kp = new KeyframeAnimationPlayer(anim).setFirstPersonMode(FirstPersonMode.DISABLED);
 		if (player == MinecraftClient.getInstance().player) {
 			fpKind = kind;
 			fpStart = player.age;

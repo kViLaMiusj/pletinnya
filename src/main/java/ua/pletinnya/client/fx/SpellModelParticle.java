@@ -89,7 +89,7 @@ public class SpellModelParticle extends Particle {
 			m.push();
 			m.multiply(camera.getRotation());
 			float k = 1f - f / 0.45f;
-			flat(imm.getBuffer(glow()), m.peek(), r * (1.4f + power * 0.08f) * (0.6f + 0.6f * (1 - k)),
+			flat(imm.getBuffer(glow()), m.peek(), r * (1.0f + power * 0.05f) * (0.6f + 0.6f * (1 - k)),
 				argb((int) (k * (el == Element.DARKNESS ? 120 : 200)), el == Element.DARKNESS ? 0x7A4AC0 : el.color));
 			m.pop();
 		}
