@@ -121,9 +121,12 @@ public class SpellModelParticle extends Particle {
 					m.push();
 					m.translate(0, r * 0.25f, 0);
 					m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 6));
-					cube(vc, m.peek(), r * 0.7f * core, r * 0.6f * core, r * 0.7f * core, argb(ca, 0xFFB040));
+					float cs = Math.min(r * 0.4f, 1.6f) * core;
+					cube(vc, m.peek(), cs, cs * 0.85f, cs, argb(ca / 2, 0xFF7A20));
 					m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(45));
-					cube(vc, m.peek(), r * 0.5f * core, r * 0.5f * core, r * 0.5f * core, argb(ca, 0xFFE27A));
+					m.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(30));
+					cube(vc, m.peek(), cs * 0.72f, cs * 0.72f, cs * 0.72f, argb((int) (ca * 0.75f), 0xFFB040));
+					cube(vc, m.peek(), cs * 0.42f, cs * 0.42f, cs * 0.42f, argb(ca, 0xFFF0A0));
 					m.pop();
 				}
 				for (int i = 0; i < n; i++) {

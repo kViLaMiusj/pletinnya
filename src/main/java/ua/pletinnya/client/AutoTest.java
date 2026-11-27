@@ -220,6 +220,8 @@ public final class AutoTest {
 		add(25, c -> shot(c, "anim_fp_thrust"));
 		add(5, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.RAISE, 6f));
 		add(25, c -> shot(c, "anim_fp_raise"));
+		add(4, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.SELF, 6f));
+		add(25, c -> shot(c, "anim_fp_self"));
 		add(4, c -> cmd(c, "clear @me"));
 		// конструкти
 		for (Element e : new Element[]{Element.EARTH, Element.ICE, Element.MANA, Element.NATURE}) {

@@ -1,6 +1,5 @@
 package ua.pletinnya.client;
 
-import dev.kosmx.playerAnim.api.firstPerson.FirstPersonConfiguration;
 import dev.kosmx.playerAnim.api.firstPerson.FirstPersonMode;
 import dev.kosmx.playerAnim.api.layered.IAnimation;
 import dev.kosmx.playerAnim.api.layered.KeyframeAnimationPlayer;
@@ -51,10 +50,45 @@ public final class ClientAnims {
 		}
 		if (layer == null) return;
 		KeyframeAnimation anim = build(kind, holdsStaff(player), player.getMainArm() == Arm.LEFT, power);
-		KeyframeAnimationPlayer kp = new KeyframeAnimationPlayer(anim)
-			.setFirstPersonMode(FirstPersonMode.THIRD_PERSON_MODEL)
-			.setFirstPersonConfiguration(new FirstPersonConfiguration(true, kind == Anim.RAISE || kind == Anim.SELF || kind == Anim.PRAY || kind == Anim.ROAR, true, true));
+		KeyframeAnimationPlayer kp = new KeyframeAnimationPlayer(anim).setFirstPersonMode(FirstPersonMode.VANILLA);
+		if (player == MinecraftClient.getInstance().player) {
+			fpKind = kind;
+			fpStart = player.age;
+		}
 		layer.replaceAnimationWithFade(AbstractFadeModifier.standardFadeIn(3, Ease.INOUTSINE), kp, true);
+	}
+
+	// ------------------------------------------------------------------ перша особа: власний рух посоха
+	private static int fpKind = -1;
+	private static int fpStart = 0;
+
+	private static final int[] FP_LEN = {12, 18, 16, 26, 18, 10};
+
+	/** Зсув посоха від першої особи: {x, y, z, нахил°} або null, коли руху немає. */
+	public static float[] firstPersonOffset(AbstractClientPlayerEntity p, float td) {
+		if (fpKind < 0 || p != MinecraftClient.getInstance().player) return null;
+		float t = p.age - fpStart + td;
+		int len = FP_LEN[Math.min(fpKind, FP_LEN.length - 1)];
+		if (t < 0 || t > len) { fpKind = -1; return null; }
+		float f = t / len;
+		float bell = (float) Math.sin(Math.PI * f);
+		switch (fpKind) {
+			case Anim.THRUST -> {
+				float up = f < 0.25f ? f / 0.25f : 1f - (f - 0.25f) / 0.75f;
+				float push = f < 0.25f ? 0f : (float) Math.sin(Math.PI * (f - 0.25f) / 0.75f);
+				return new float[]{-0.12f * push, 0.12f * up - 0.04f * push, -0.45f * push, -18f * push + 10f * up};
+			}
+			case Anim.RAISE -> {
+				float up = f < 0.45f ? (float) Math.sin(Math.PI / 2 * f / 0.45f) : 1f - (f - 0.45f) / 0.25f;
+				up = Math.max(-0.4f, up);
+				if (f > 0.7f) up = -0.4f * (1f - (f - 0.7f) / 0.3f);
+				return new float[]{-0.1f * bell, 0.35f * up, -0.1f * bell, 14f * up};
+			}
+			case Anim.SELF -> { return new float[]{-0.3f * bell, 0.05f * bell, 0.05f * bell, -8f * bell}; }
+			case Anim.PRAY -> { return new float[]{-0.28f * bell, -0.12f * bell, 0f, -6f * bell}; }
+			case Anim.ROAR -> { return new float[]{0.12f * bell, -0.22f * bell, 0f, 12f * bell}; }
+			default -> { return new float[]{0.05f * bell, 0.05f * bell, 0.15f * bell, 15f * bell}; }
+		}
 	}
 
 	private static boolean holdsStaff(AbstractClientPlayerEntity p) {
@@ -125,8 +159,8 @@ public final class ClientAnims {
 			case Anim.RAISE -> {
 				// обома руками над головою, удар посохом донизу
 				return new B(left, 21)
-					.main(5, -2.9f, ry, 0.1f).main(9, -3.05f, ry, 0.12f).main(12, -0.85f, ry, 0f).main(21, rest, ry, 0f)
-					.off(5, -2.7f, 0.45f, 0f).off(9, -2.85f, 0.45f, 0f).off(12, -0.6f, 0.3f, 0f).off(21, 0f, 0f, 0f)
+					.main(5, -1.95f, ry, 0.1f).main(9, -2.05f, ry, 0.12f).main(12, -0.8f, ry, 0f).main(21, rest, ry, 0f)
+					.off(5, -1.85f, 0.5f, 0f).off(9, -1.95f, 0.5f, 0f).off(12, -0.6f, 0.3f, 0f).off(21, 0f, 0f, 0f)
 					.body(5, -0.12f, 0f).body(9, -0.15f, 0f).body(12, 0.35f, 0f).body(21, 0f, 0f)
 					.build();
 			}
