@@ -241,6 +241,9 @@ public final class AutoTest {
 			cmd(c, "kill @e[type=pletinnya:weave_projectile]");
 			cmd(c, "kill @e[type=pletinnya:spell_spirit]");
 			cmd(c, "item replace entity @me weapon.mainhand with pletinnya:staff_mana");
+			cmd(c, "effect give @me fire_resistance 99999 0 true");
+			cmd(c, "execute at @me run fill ~-14 ~ ~-6 ~14 ~10 ~22 air");
+			cmd(c, "execute at @me run fill ~-14 ~-1 ~-6 ~14 ~-1 ~22 grass_block");
 		});
 		Object[][] forms = {
 			{SpellForm.BEAM, Element.LIGHTNING, Element.WATER, 2, "beam"},
@@ -261,7 +264,8 @@ public final class AutoTest {
 			String nm = (String) fm[4];
 			add(12, c -> {
 				cmd(c, "kill @e[type=minecraft:husk]");
-				for (int k = 0; k < 5; k++) cmd(c, "execute at @me run summon minecraft:husk ~" + (k * 2 - 4) + " ~ ~" + (9 + (k % 2) * 2) + " {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
+				cmd(c, "execute at @me run fill ~-14 ~ ~-6 ~14 ~10 ~22 air");
+				for (int k = 0; k < 5; k++) cmd(c, "execute at @me run summon minecraft:husk ~" + (k * 2 - 4) + " ~ ~" + (7 + (k % 2) * 2) + " {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
 			});
 			add(wait, c -> serverPlayer(c, p -> {
 				p.setYaw(0f); p.setPitch(form == SpellForm.RAIN ? 25f : 4f);

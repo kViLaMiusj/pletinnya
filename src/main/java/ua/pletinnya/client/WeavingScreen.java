@@ -236,7 +236,6 @@ public class WeavingScreen extends Screen {
 			String v = String.valueOf(getParam(i));
 			ctx.drawTextWithShadow(textRenderer, Text.literal(v), px + 92 - textRenderer.getWidth(v) / 2, py + 4, color);
 		}
-		GuiDraw.sigil(ctx, draft.element(), x + 236, top + 49, draft.elementType().color);
 
 		int iy = y + 19 * 4 + 4;
 		ctx.fill(x - 2, iy - 3, x + 236, iy + 58, 0x66000000);
