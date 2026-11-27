@@ -5,7 +5,7 @@ import net.minecraft.client.model.*;
 import java.util.ArrayList;
 import java.util.List;
 
-/** Згенеровано tools/art/armor_models8.py — вбрання магів. Не редагувати вручну. */
+/** Згенеровано tools/art/armor_models9.py — вбрання магів. Не редагувати вручну. */
 public final class ArmorModels {
 	private ArmorModels() {}
 
