@@ -71,6 +71,7 @@ public class SpellModelParticle extends Particle {
 			default -> { return; }
 		}
 		int kind = p.kind() == Vfx.RUNE_FIRE ? Vfx.IMPACT : p.kind();
+		if (kind == Vfx.BEAM || kind == Vfx.CHAIN) ua.pletinnya.Pletinnya.LOGGER.info("AutoTest dbg vfx kind={} c={} d={} size={} extra={}", kind, c, d, s, p.extra());
 		MinecraftClient.getInstance().particleManager.addParticle(new SpellModelParticle(w, kind, e, c, d, s, pw, life, p.extra(), p.extra2()));
 	}
 

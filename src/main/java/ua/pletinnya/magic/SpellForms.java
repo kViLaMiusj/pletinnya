@@ -193,6 +193,7 @@ public final class SpellForms {
 		if (bh.getType() == HitResult.Type.BLOCK && hits.size() <= max) area(ctx.withPower(ctx.power() * 0.4f * mul), end, 1f + f.size() * 0.12f);
 		Vec3d from = eye.add(look.multiply(0.8)).add(0, -0.25, 0);
 		Vfx.send(w, Vfx.BEAM, f.element(), from, look, width, ctx.power(), (float) len, f.fused() ? f.element2() : -1);
+		ua.pletinnya.Pletinnya.LOGGER.info("AutoTest dbg beam from={} look={} len={} hits={}", from, look, len, hits.size());
 		w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.5f, 1.8f);
 	}
 
