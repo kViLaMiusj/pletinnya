@@ -64,8 +64,6 @@ public final class AutoTest {
 		});
 	}
 
-	private static final class Vec3dHolder { static net.minecraft.util.math.Vec3d v; }
-
 	private static void spawnProj(ServerPlayerEntity p, SpellFormula f, double dx, double dy, double dz) {
 		ua.pletinnya.entity.WeaveProjectileEntity pr = new ua.pletinnya.entity.WeaveProjectileEntity(p.getServerWorld(), p, f, f.power());
 		pr.setPosition(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
@@ -247,15 +245,8 @@ public final class AutoTest {
 			cmd(c, "execute at @me run fill ~-14 ~ ~-6 ~14 ~10 ~22 air");
 			cmd(c, "execute at @me run fill ~-14 ~-1 ~-6 ~14 ~-1 ~22 grass_block");
 		});
-		add(6, c -> {
-			Vec3dHolder.v = c.player.getEyePos();
-			var e = c.player.getEyePos().add(0, -0.3, 0.8);
-			ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.BEAM, Element.FIRE.ordinal(), e.x, e.y, e.z, 0f, -0.05f, 1f, 0.8f, 6f, 12f, -1f));
-			ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.CHAIN, Element.LIGHTNING.ordinal(), e.x + 2, e.y, e.z, 1f, -1f, 6f, 0.3f, 6f, 0f, -1f));
-		});
-		add(4, c -> shot(c, "dbg_beam"));
 		Object[][] forms = {
-			{SpellForm.BEAM, Element.LIGHTNING, Element.WATER, 2, "beam"},
+			{SpellForm.BEAM, Element.LIGHTNING, Element.WATER, 1, "beam"},
 			{SpellForm.CONE, Element.FIRE, null, 4, "cone"},
 			{SpellForm.CHAIN, Element.LIGHTNING, null, 7, "chain"},
 			{SpellForm.RAIN, Element.ICE, null, 30, "rain"},
@@ -284,7 +275,10 @@ public final class AutoTest {
 				SpellCaster.forget(p.getUuid());
 				SpellCaster.cast(p, d, sf);
 			}));
+			boolean side = form == SpellForm.BEAM || form == SpellForm.CHAIN || form == SpellForm.CONE || form == SpellForm.WAVE || form == SpellForm.PROJECTILE;
+			if (side) add(1, c -> c.player.setYaw(62f));
 			add(10, c -> shot(c, "form_" + nm));
+			if (side) add(1, c -> c.player.setYaw(0f));
 			add(20, c -> { cmd(c, "kill @e[type=pletinnya:spell_spirit]"); cmd(c, "kill @e[type=pletinnya:weave_projectile]"); });
 			if (form == SpellForm.BLINK) add(2, c -> cmd(c, "execute at @me run tp @me ~ ~ ~-8 0 0"));
 		}
