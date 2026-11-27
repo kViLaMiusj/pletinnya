@@ -35,6 +35,8 @@ public class PletinnyaClient implements ClientModInitializer {
 		ClientPlayNetworking.registerGlobalReceiver(ua.pletinnya.fx.Vfx.Payload.ID, (payload, ctx) -> {
 			if (ctx.client().world != null) ua.pletinnya.client.fx.ClientVfx.play(ctx.client().world, payload);
 		});
+		ClientAnims.init();
+		ClientPlayNetworking.registerGlobalReceiver(ua.pletinnya.fx.Anim.Payload.ID, (payload, ctx) -> ClientAnims.onPayload(payload));
 
 		CAST = key("cast", GLFW.GLFW_KEY_R);
 		NEXT = key("next_spell", GLFW.GLFW_KEY_G);

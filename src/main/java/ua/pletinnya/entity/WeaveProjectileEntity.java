@@ -27,6 +27,9 @@ import ua.pletinnya.registry.ModItems;
 
 /** Снаряд із мани. Несе формулу й вивільняє її при влучанні або за умовою. */
 public class WeaveProjectileEntity extends ThrownItemEntity {
+	private static final net.minecraft.entity.data.TrackedData<Integer> SIZE = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
+	private static final net.minecraft.entity.data.TrackedData<Integer> POWER = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
+	private static final net.minecraft.entity.data.TrackedData<Integer> QUALITY = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
 	private SpellFormula formula = SpellFormula.empty();
 	private float power = 1f;
 	private int life = 100;
@@ -42,7 +45,29 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		this.power = power;
 		this.life = 60 + formula.range() * 16;
 		this.setItem(new ItemStack(ModItems.essence(formula.elementType())));
+		syncStats();
 	}
+
+	@Override
+	protected void initDataTracker(net.minecraft.entity.data.DataTracker.Builder builder) {
+		super.initDataTracker(builder);
+		builder.add(SIZE, 3);
+		builder.add(POWER, 3);
+		builder.add(QUALITY, 60);
+	}
+
+	private void syncStats() {
+		dataTracker.set(SIZE, formula.size());
+		dataTracker.set(POWER, Math.max(1, Math.round(formula.power() * Math.max(0.3f, power / Math.max(1f, formula.power())))));
+		dataTracker.set(QUALITY, formula.quality());
+	}
+
+	/** Розмір 1..10 — для 3D-образу на клієнті. */
+	public int sizeStat() { return dataTracker.get(SIZE); }
+	/** Сила 1..10. */
+	public int powerStat() { return dataTracker.get(POWER); }
+	/** Якість плетіння 0..100: чим нижча, тим неспокійніший образ. */
+	public int qualityStat() { return dataTracker.get(QUALITY); }
 
 	@Override
 	protected Item getDefaultItem() {
@@ -67,7 +92,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		super.tick();
 		World world = getWorld();
 		if (world.isClient) {
-			ua.pletinnya.fx.ProjectileTrails.trail(world, getPos(), getVelocity(), element(), age);
+			ua.pletinnya.fx.ProjectileTrails.trail(world, getPos(), getVelocity(), element(), age, sizeStat(), powerStat());
 			return;
 		}
 		if (isRemoved()) return;
@@ -126,5 +151,6 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		}
 		power = nbt.getFloat("Power");
 		life = nbt.getInt("Life");
+		syncStats();
 	}
 }

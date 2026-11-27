@@ -9,6 +9,21 @@ import ua.pletinnya.magic.Element;
 public final class ProjectileTrails {
 	private ProjectileTrails() {}
 
+	/** Шлейф залежить від статів: розмір розсуває його ширше, сила робить густішим. */
+	public static void trail(World w, Vec3d pos, Vec3d vel, Element e, int age, int size, int power) {
+		Random r = w.getRandom();
+		float spread = 0.08f + size * 0.05f;
+		int reps = 1 + (power - 1) / 3;
+		for (int i = 0; i < reps; i++) {
+			Vec3d p = i == 0 ? pos : pos.add(r.nextGaussian() * spread, r.nextGaussian() * spread, r.nextGaussian() * spread);
+			trail(w, p, vel, e, age + i);
+		}
+		if (size >= 6 && age % 2 == 0) {
+			int c = e.color;
+			w.addParticle(new FxEffects.Ring(c, 0.25f + size * 0.07f), pos.x, pos.y + 0.15, pos.z, 0, 0, 0);
+		}
+	}
+
 	public static void trail(World w, Vec3d pos, Vec3d vel, Element e, int age) {
 		Random r = w.getRandom();
 		var fx = ModParticles.of(e);

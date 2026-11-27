@@ -43,6 +43,15 @@ public class WeavingScreen extends Screen {
 	private int phase = 0;          // 0 — очікування, 1 — показ, 2 — введення, 3 — результат
 	private int showTicks = 0;
 	private int[] pattern = new int[0];
+	// анімація інтерфейсу
+	private final long t0 = System.nanoTime();
+	private long lastFrame = System.nanoTime();
+	private long finishedAt = 0L;
+	private final float[] shownLen = new float[4];
+	private float frameDelta = 0f;
+	private float handDelta = 0f;
+
+	private float time() { return (System.nanoTime() - t0) / 1e9f; }
 	private final List<Integer> input = new ArrayList<>();
 	private int lastQuality = -1;
 
@@ -207,18 +216,26 @@ public class WeavingScreen extends Screen {
 		int cx = x + 28, cy = iy + 26;
 		int[] angles = {-90, 0, 90, 180};
 		int[] cols = {0xFFFF8A5A, 0xFF7AD0FF, 0xFFB0FF7A, 0xFFE0B0FF};
+		float T = time();
 		for (int i = 0; i < 4; i++) {
-			if (!paramUsed(i)) continue;
+			float target = paramUsed(i) ? 6 + getParam(i) * 2 : 0;
+			shownLen[i] += (target - shownLen[i]) * Math.min(1f, frameDelta * 9f);   // нитки плавно ростуть і вкорочуються
+			if (shownLen[i] < 0.5f) continue;
 			double a = Math.toRadians(angles[i] + 45);
-			int len = 6 + getParam(i) * 2;
+			float len = shownLen[i];
 			int ex = cx + (int) (Math.cos(a) * len), ey = cy + (int) (Math.sin(a) * len);
 			GuiDraw.line(ctx, cx, cy, ex, ey, cols[i], 1);
 			GuiDraw.node(ctx, ex, ey, 2, cols[i]);
+			// іскра мани біжить ниткою від серця до кінця
+			float fr = (T * 0.9f + i * 0.25f) % 1f;
+			GuiDraw.node(ctx, cx + (int) (Math.cos(a) * len * fr), cy + (int) (Math.sin(a) * len * fr), 1, 0xFFFFFFFF);
 		}
+		int pulse = 5 + Math.round(MathHelper.sin(T * 3.2f));
+		GuiDraw.node(ctx, cx, cy, pulse + 2, 0x44000000 | draft.elementType().color);
 		GuiDraw.node(ctx, cx, cy, 5, 0xFF000000 | draft.elementType().color);
 		if (draft.quality() > 0) {
 			for (int k = 0; k < 12; k++) {
-				double a = k * Math.PI / 6;
+				double a = k * Math.PI / 6 + T * 0.35;
 				ctx.fill(cx + (int) (Math.cos(a) * 26), cy + (int) (Math.sin(a) * 26), cx + (int) (Math.cos(a) * 26) + 1, cy + (int) (Math.sin(a) * 26) + 1, 0xFFFFD27A);
 			}
 		}
@@ -302,6 +319,7 @@ public class WeavingScreen extends Screen {
 		lastQuality = Math.round(ok * 100f / pattern.length);
 		if (ok == pattern.length) lastQuality = 100;
 		phase = 3;
+		finishedAt = System.nanoTime();
 		clearAndInit();
 	}
 
@@ -317,11 +335,42 @@ public class WeavingScreen extends Screen {
 
 		int col = 0xFF000000 | draft.elementType().color;
 		// візерунок під час показу або після завершення
-		if (phase == 1 || phase == 3) {
-			int shown = phase == 1 ? Math.min(pattern.length, 1 + (30 + pattern.length * 6 - showTicks) / 6) : pattern.length;
-			for (int i = 1; i < shown; i++) {
+		if (phase == 1) {
+			// візерунок малюється нитка за ниткою, з іскрою на кінці
+			float prog = Math.max(0f, (30 + pattern.length * 6 - showTicks + handDelta) / 6f);
+			int full = Math.min(pattern.length - 1, (int) prog);
+			for (int i = 1; i <= full; i++) {
 				int[] a = nodePos(pattern[i - 1]), b = nodePos(pattern[i]);
-				GuiDraw.line(ctx, a[0], a[1], b[0], b[1], phase == 1 ? col : 0x66FFFFFF, 2);
+				GuiDraw.line(ctx, a[0], a[1], b[0], b[1], col, 2);
+			}
+			if (full < pattern.length - 1 && full >= 0) {
+				float fr = prog - (int) prog;
+				int[] a = nodePos(pattern[full]), b = nodePos(pattern[full + 1]);
+				int hx = a[0] + Math.round((b[0] - a[0]) * fr), hy = a[1] + Math.round((b[1] - a[1]) * fr);
+				GuiDraw.line(ctx, a[0], a[1], hx, hy, col, 2);
+				GuiDraw.node(ctx, hx, hy, 4, 0xFFFFFFFF);
+			}
+		} else if (phase == 3) {
+			float age = finishedAt == 0 ? 9f : (System.nanoTime() - finishedAt) / 1e9f;
+			boolean good = lastQuality >= 80;
+			for (int i = 1; i < pattern.length; i++) {
+				int[] a = nodePos(pattern[i - 1]), b = nodePos(pattern[i]);
+				int c = 0x66FFFFFF;
+				if (age < 1.2f) {
+					int al = (int) (255 * (1f - age / 1.2f));
+					c = (Math.max(0x66, al) << 24) | (good ? 0xFFF2C0 : 0xFF6060);
+				}
+				GuiDraw.line(ctx, a[0], a[1], b[0], b[1], c, age < 0.4f ? 3 : 2);
+			}
+			if (good && age < 1f) {
+				// спалах успішного плетіння: кільце розходиться від центру сітки
+				int[] cp = nodePos(4);
+				int rr = (int) (8 + age * 70);
+				int al = (int) (220 * (1f - age));
+				for (int k = 0; k < 24; k++) {
+					double ang = k * Math.PI / 12;
+					GuiDraw.node(ctx, cp[0] + (int) (Math.cos(ang) * rr), cp[1] + (int) (Math.sin(ang) * rr), 2, (al << 24) | 0xFFE6A0);
+				}
 			}
 		}
 		for (int i = 1; i < input.size(); i++) {
@@ -334,7 +383,7 @@ public class WeavingScreen extends Screen {
 			boolean used = input.contains(i);
 			GuiDraw.node(ctx, p[0], p[1], 9, 0x88000000);
 			GuiDraw.node(ctx, p[0], p[1], 7, used ? 0xFFFFE6A0 : 0xFF5A4A7A);
-			GuiDraw.node(ctx, p[0], p[1], 3, used ? 0xFFFFFFFF : col);
+			GuiDraw.node(ctx, p[0], p[1], used ? 3 : 2 + Math.round(1 + MathHelper.sin(time() * 3f + i)), used ? 0xFFFFFFFF : col);
 		}
 	}
 
@@ -450,6 +499,10 @@ public class WeavingScreen extends Screen {
 
 	@Override
 	public void render(DrawContext ctx, int mouseX, int mouseY, float delta) {
+		long now = System.nanoTime();
+		frameDelta = Math.min(0.1f, (now - lastFrame) / 1e9f);
+		lastFrame = now;
+		handDelta = delta;
 		super.render(ctx, mouseX, mouseY, delta);
 		GuiDraw.sigil(ctx, 11, left + 8, top + 4, 0xB8AEFF);
 		ctx.drawTextWithShadow(textRenderer, title, left + 26, top + 9, 0xF0E0B0);

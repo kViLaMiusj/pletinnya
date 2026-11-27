@@ -19,6 +19,8 @@ public final class ClientVfx {
 		Vec3d c = new Vec3d(p.x(), p.y(), p.z());
 		Vec3d dir = new Vec3d(p.dx(), p.dy(), p.dz());
 		float s = p.size();
+		powerMul = 0.6f + Math.max(1f, p.power()) * 0.1f;
+		SpellModelParticle.spawn(w, p);
 		switch (p.kind()) {
 			case Vfx.CAST -> castCircle(w, c, Element.byIndex(p.element()), s);
 			case Vfx.IMPACT -> impact(w, c, Element.byIndex(p.element()), s);
@@ -39,6 +41,9 @@ public final class ClientVfx {
 			}
 		}
 	}
+
+	/** Множник густоти частинок від сили закляття. */
+	private static float powerMul = 1f;
 
 	private static void add(ClientWorld w, ParticleEffect e, double x, double y, double z, double vx, double vy, double vz) {
 		w.addParticle(e, true, x, y, z, vx, vy, vz);
@@ -66,7 +71,7 @@ public final class ClientVfx {
 	static void impact(ClientWorld w, Vec3d c, Element e, float r) {
 		Random rnd = w.getRandom();
 		var fx = ModParticles.of(e);
-		int n = (int) Math.min(90, 14 + r * r * 6);
+		int n = (int) Math.min(140, (14 + r * r * 6) * powerMul);
 		switch (e) {
 			case FIRE -> {
 				for (int i = 0; i < n; i++) {

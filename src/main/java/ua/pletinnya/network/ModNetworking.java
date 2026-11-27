@@ -94,6 +94,7 @@ public final class ModNetworking {
 
 	public static void init() {
 		PayloadTypeRegistry.playS2C().register(ua.pletinnya.fx.Vfx.Payload.ID, ua.pletinnya.fx.Vfx.Payload.CODEC);
+		PayloadTypeRegistry.playS2C().register(ua.pletinnya.fx.Anim.Payload.ID, ua.pletinnya.fx.Anim.Payload.CODEC);
 		PayloadTypeRegistry.playC2S().register(DragonSpeakPayload.ID, DragonSpeakPayload.CODEC);
 		PayloadTypeRegistry.playC2S().register(PrayPayload.ID, PrayPayload.CODEC);
 		ServerPlayNetworking.registerGlobalReceiver(DragonSpeakPayload.ID, (payload, ctx) -> {

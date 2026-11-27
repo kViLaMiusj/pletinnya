@@ -201,7 +201,7 @@ public final class SpellEffects {
 				w.spawnParticles(MANA_DUST, t.getX(), t.getBodyY(0.5), t.getZ(), 30, 0.4, 0.5, 0.4, 0);
 			}
 		}
-		Vfx.send(w, Vfx.IMPACT, ctx.element().ordinal(), t.getPos().add(0, t.getHeight() * 0.5, 0), 0.9f);
+		Vfx.sendP(w, Vfx.IMPACT, ctx.element().ordinal(), t.getPos().add(0, t.getHeight() * 0.5, 0), 0.6f + ctx.formula().size() * 0.12f, ctx.power());
 		sound(w, t.getPos(), ctx.element());
 	}
 
@@ -268,7 +268,7 @@ public final class SpellEffects {
 				WeaveManager.dispelAnchored(ctx, me);
 			}
 		}
-		Vfx.send(w, Vfx.SELF, ctx.element().ordinal(), me.getPos(), me.getHeight());
+		Vfx.sendP(w, Vfx.SELF, ctx.element().ordinal(), me.getPos(), me.getHeight(), ctx.power());
 		sound(w, me.getPos(), ctx.element());
 	}
 
@@ -375,7 +375,7 @@ public final class SpellEffects {
 			}
 		}
 
-		Vfx.send(w, Vfx.IMPACT, el.ordinal(), c, r);
+		Vfx.sendP(w, Vfx.IMPACT, el.ordinal(), c, r, ctx.power());
 		sound(w, c, el);
 	}
 
@@ -428,7 +428,7 @@ public final class SpellEffects {
 		if (wall == null) {
 			// Поле: періодично діє на область, поки триває плетіння.
 			WeaveManager.field(ctx, Vec3d.ofBottomCenter(base), life);
-			Vfx.send(w, Vfx.RUNE, el.ordinal(), Vec3d.ofBottomCenter(base), f.radius());
+			Vfx.sendP(w, Vfx.RUNE, el.ordinal(), Vec3d.ofBottomCenter(base), f.radius(), ctx.power());
 			sound(w, Vec3d.ofCenter(base), el);
 			return;
 		}
@@ -448,7 +448,7 @@ public final class SpellEffects {
 			}
 		}
 		WeaveManager.commit(weave);
-		Vfx.send(w, Vfx.WALL, el.ordinal(), Vec3d.ofBottomCenter(base), Vec3d.of(side.getVector()), half * 2 + 1);
+		Vfx.send(w, Vfx.WALL, el.ordinal(), Vec3d.ofBottomCenter(base), Vec3d.of(side.getVector()), half * 2 + 1, ctx.power());
 		sound(w, Vec3d.ofCenter(base), el);
 	}
 

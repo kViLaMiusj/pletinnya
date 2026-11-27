@@ -124,7 +124,7 @@ public final class WeaveManager {
 			w.expireAt = now + Math.max(1200, f.durationTicks() * 6L);
 		}
 		add(w);
-		Vfx.send(ctx.world(), Vfx.RUNE, ctx.element().ordinal(), pos, Math.max(1f, f.radius() * 0.6f));
+		Vfx.sendP(ctx.world(), Vfx.RUNE, ctx.element().ordinal(), pos, Math.max(1f, f.radius() * 0.6f), ctx.power());
 	}
 
 	private static void add(Weave w) {
@@ -202,7 +202,7 @@ public final class WeaveManager {
 					if (fire) {
 						WEAVES.remove(w);
 						world.playSound(null, w.pos.x, w.pos.y, w.pos.z, SoundEvents.BLOCK_AMETHYST_CLUSTER_BREAK, SoundCategory.PLAYERS, 0.6f, 1.6f);
-						Vfx.send(world, Vfx.RUNE_FIRE, w.formula.element(), w.pos, w.formula.radius());
+						Vfx.sendP(world, Vfx.RUNE_FIRE, w.formula.element(), w.pos, w.formula.radius(), w.formula.power());
 						Entity target = anchor;
 						if (target == null && w.formula.formType() == SpellForm.SELF) target = caster;
 						SpellEffects.release(ctx, w.pos, target, w.facing);

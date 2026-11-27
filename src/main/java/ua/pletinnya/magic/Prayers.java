@@ -55,6 +55,7 @@ public final class Prayers {
 		ServerWorld w = p.getServerWorld();
 		Vec3d pos = p.getPos();
 		Vfx.send(w, Vfx.PRAYER, pr.deity, pos, 1.5f);
+		ua.pletinnya.fx.Anim.play(p, ua.pletinnya.fx.Anim.PRAY, 1f);
 		w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.BLOCK_BEACON_POWER_SELECT, SoundCategory.PLAYERS, 0.8f, 1.3f);
 		switch (pr.id) {
 			case "elias_eye" -> {
@@ -136,6 +137,7 @@ public final class Prayers {
 			p.sendMessage(Text.translatable("message.pletinnya.prayed", deityName(d.paths.deity), (int) d.paths.faith).formatted(Formatting.GOLD), false);
 		}
 		Vfx.send(w, Vfx.PRAYER, d.paths.deity, p.getPos(), 1.2f);
+		ua.pletinnya.fx.Anim.play(p, ua.pletinnya.fx.Anim.PRAY, 1f);
 		w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.BLOCK_BEACON_ACTIVATE, SoundCategory.PLAYERS, 0.7f, 1.4f);
 		d.markDirty();
 	}

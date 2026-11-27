@@ -70,7 +70,8 @@ public final class SpellCaster {
 			p.addExhaustion(2f);
 		}
 		w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ENTITY_ENDER_DRAGON_GROWL, SoundCategory.PLAYERS, 0.6f, 1.5f);
-		Vfx.send(w, Vfx.DRAGON, f.element(), p.getEyePos(), p.getRotationVec(1f), f.power());
+		Vfx.send(w, Vfx.DRAGON, f.element(), p.getEyePos(), p.getRotationVec(1f), f.power(), f.power());
+		ua.pletinnya.fx.Anim.play(p, ua.pletinnya.fx.Anim.ROAR, f.power());
 		for (ServerPlayerEntity o : w.getPlayers()) {
 			if (o.squaredDistanceTo(p) < 48 * 48) {
 				o.sendMessage(Text.literal("«" + f.name() + "»").formatted(Formatting.GOLD, Formatting.BOLD), true);
@@ -138,6 +139,7 @@ public final class SpellCaster {
 		if (rnd.nextFloat() < chance) {
 			misfired = true;
 			Vfx.send(w, Vfx.MISFIRE, f.element(), p.getPos().add(0, 1.2, 0), 1f);
+			ua.pletinnya.fx.Anim.play(p, ua.pletinnya.fx.Anim.RECOIL, 1f);
 			float roll = rnd.nextFloat();
 			if (roll < 0.4f) {
 				w.spawnParticles(ParticleTypes.SMOKE, p.getX(), p.getBodyY(0.7), p.getZ(), 15, 0.3, 0.3, 0.3, 0.02);
@@ -181,7 +183,12 @@ public final class SpellCaster {
 		SpellContext ctx = new SpellContext(w, p, f, power);
 		Direction facing = p.getHorizontalFacing();
 		boolean now = f.triggerType() == SpellTrigger.IMMEDIATE;
-		Vfx.send(w, Vfx.CAST, f.element(), p.getPos(), 1.3f + f.complexity() * 0.04f);
+		Vfx.sendP(w, Vfx.CAST, f.element(), p.getPos(), 1.3f + f.complexity() * 0.04f, power);
+		ua.pletinnya.fx.Anim.play(p, switch (f.formType()) {
+			case PROJECTILE, TOUCH -> ua.pletinnya.fx.Anim.THRUST;
+			case AREA, CONSTRUCT -> ua.pletinnya.fx.Anim.RAISE;
+			case SELF -> ua.pletinnya.fx.Anim.SELF;
+		}, power);
 
 		switch (f.formType()) {
 			case PROJECTILE -> {

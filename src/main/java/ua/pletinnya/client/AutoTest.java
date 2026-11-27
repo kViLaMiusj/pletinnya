@@ -64,6 +64,13 @@ public final class AutoTest {
 		});
 	}
 
+	private static void spawnProj(ServerPlayerEntity p, SpellFormula f, double dx, double dy, double dz) {
+		ua.pletinnya.entity.WeaveProjectileEntity pr = new ua.pletinnya.entity.WeaveProjectileEntity(p.getServerWorld(), p, f, f.power());
+		pr.setPosition(p.getX() + dx, p.getY() + dy, p.getZ() + dz);
+		pr.setVelocity(net.minecraft.util.math.Vec3d.ZERO);
+		p.getServerWorld().spawnEntity(pr);
+	}
+
 	private static void add(int delay, Consumer<MinecraftClient> a) { STEPS.add(new Step(delay, a)); }
 
 	private static void build() {
@@ -158,6 +165,62 @@ public final class AutoTest {
 				add(25, c -> { });
 			}
 		}
+		// 3D-снаряди: усі напрями в ряд, далі порівняння розмірів
+		add(10, c -> {
+			c.options.setPerspective(Perspective.FIRST_PERSON);
+			c.options.hudHidden = true;
+			c.player.setYaw(0f); c.player.setPitch(6f);
+			cmd(c, "kill @e[type=pletinnya:weave_projectile]");
+		});
+		add(8, c -> serverPlayer(c, p -> {
+			p.setYaw(0f); p.setPitch(6f);
+			Element[] es = Element.values();
+			for (int i = 0; i < es.length; i++) spawnProj(p, new SpellFormula("g", es[i].ordinal(), 0, 6, 5, 10, 3, 0, 90), -5.5 + i, 1.4, 6.5);
+		}));
+		add(4, c -> shot(c, "proj_gallery"));
+		add(4, c -> cmd(c, "kill @e[type=pletinnya:weave_projectile]"));
+		add(8, c -> serverPlayer(c, p -> {
+			int[][] rows = {{1, 1}, {4, 4}, {7, 7}, {10, 10}};
+			for (int i = 0; i < 4; i++) {
+				spawnProj(p, new SpellFormula("s", Element.FIRE.ordinal(), 0, rows[i][1], rows[i][0], 10, 3, 0, 90), -5.0 + i * 2.2, 2.6, 7.5);
+				spawnProj(p, new SpellFormula("s", Element.ICE.ordinal(), 0, rows[i][1], rows[i][0], 10, 3, 0, 90), -5.0 + i * 2.2, 0.6, 7.5);
+				spawnProj(p, new SpellFormula("s", Element.LIGHTNING.ordinal(), 0, rows[i][1], rows[i][0], 10, 3, 0, i * 30), 4.0 + (i % 2) * 2.2, 0.6 + (i / 2) * 2.0, 7.5);
+			}
+		}));
+		add(4, c -> shot(c, "proj_sizes"));
+		add(4, c -> cmd(c, "kill @e[type=pletinnya:weave_projectile]"));
+		// 3D-влучання: мале й слабке ліворуч, велике й сильне праворуч
+		for (Element e : new Element[]{Element.FIRE, Element.ICE, Element.EARTH, Element.LIGHTNING, Element.WATER, Element.MANA}) {
+			add(6, c -> { c.player.setYaw(0f); c.player.setPitch(28f); });
+			add(7, c -> {
+				double x = c.player.getX(), y = c.player.getY(), z = c.player.getZ();
+				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x - 3.5, y, z + 8, 0, 0, 0, 1.5f, 2f));
+				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x + 3.0, y, z + 9, 0, 0, 0, 5f, 10f));
+			});
+			add(30, c -> shot(c, "impact3d_" + e.id));
+		}
+		// анімації тіла: вид спереду в середині руху
+		int[] kinds = {ua.pletinnya.fx.Anim.THRUST, ua.pletinnya.fx.Anim.RAISE, ua.pletinnya.fx.Anim.SELF, ua.pletinnya.fx.Anim.PRAY, ua.pletinnya.fx.Anim.ROAR};
+		String[] kn = {"thrust", "raise", "self", "pray", "roar"};
+		int[] at = {5, 7, 7, 10, 8};
+		for (int i = 0; i < kinds.length; i++) {
+			int k = kinds[i], when = at[i];
+			String nm = kn[i];
+			add(10, c -> {
+				c.options.setPerspective(Perspective.THIRD_PERSON_FRONT);
+				c.options.hudHidden = true;
+				c.player.setPitch(0f);
+				cmd(c, "item replace entity @me weapon.mainhand with pletinnya:staff_fire");
+			});
+			add(when, c -> ClientAnims.play(c.player, k, 6f));
+			add(25, c -> shot(c, "anim_" + nm));
+		}
+		add(6, c -> c.options.setPerspective(Perspective.FIRST_PERSON));
+		add(5, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.THRUST, 6f));
+		add(25, c -> shot(c, "anim_fp_thrust"));
+		add(5, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.RAISE, 6f));
+		add(25, c -> shot(c, "anim_fp_raise"));
+		add(4, c -> cmd(c, "clear @me"));
 		// конструкти
 		for (Element e : new Element[]{Element.EARTH, Element.ICE, Element.MANA, Element.NATURE}) {
 			add(4, c -> serverPlayer(c, p -> {
