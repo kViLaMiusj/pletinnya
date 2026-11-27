@@ -83,6 +83,11 @@ public final class SpellCaster {
 	}
 
 	public static void cast(ServerPlayerEntity p, MageData d, SpellFormula f) {
+		cast(p, d, f, 1f);
+	}
+
+	/** powerMul — множник сили (накопичення: чим довше тримав посох, тим сильніше). */
+	public static void cast(ServerPlayerEntity p, MageData d, SpellFormula f, float powerMul) {
 		if (p.isSpectator() || !p.isAlive()) return;
 		long now = WeaveManager.now();
 		Long last = LAST_CAST.get(p.getUuid());
@@ -95,14 +100,15 @@ public final class SpellCaster {
 		}
 
 		float cost = WeavingLaws.cost(p, d, f);
+		if (powerMul > 1f) cost *= 1f + (powerMul - 1f) * 0.6f;
 		if (!p.isCreative() && d.mana < cost) {
 			p.sendMessage(Text.translatable("message.pletinnya.no_mana", (int) Math.ceil(cost), (int) d.mana).formatted(Formatting.BLUE), true);
 			return;
 		}
 
 		// Закон навантаження
-		boolean sustained = f.formType() == SpellForm.CONSTRUCT
-			|| (f.triggerType() != SpellTrigger.IMMEDIATE && f.formType() != SpellForm.PROJECTILE);
+		boolean sustained = f.formType().sustained() || f.triggerType() == SpellTrigger.RETALIATE
+			|| (f.triggerType().isRune() && f.formType() != SpellForm.PROJECTILE);
 		int load = WeaveManager.load(p.getUuid());
 		if (sustained && load >= Ranks.loadLimit(d.rank)) {
 			p.sendMessage(Text.translatable("message.pletinnya.overloaded", load, Ranks.loadLimit(d.rank)).formatted(Formatting.GOLD), true);
@@ -133,7 +139,7 @@ public final class SpellCaster {
 
 		// Закон наслідку: помилка у формулі
 		float chance = WeavingLaws.misfireChance(p, d, f, load, cost);
-		float power = f.power();
+		float power = f.power() * powerMul;
 		SpellFormula effective = f;
 		boolean misfired = false;
 		if (rnd.nextFloat() < chance) {
@@ -180,48 +186,26 @@ public final class SpellCaster {
 
 	private static void execute(ServerPlayerEntity p, SpellFormula f, float power) {
 		ServerWorld w = p.getServerWorld();
-		SpellContext ctx = new SpellContext(w, p, f, power);
-		Direction facing = p.getHorizontalFacing();
-		boolean now = f.triggerType() == SpellTrigger.IMMEDIATE;
 		Vfx.sendP(w, Vfx.CAST, f.element(), p.getPos(), 1.3f + f.complexity() * 0.04f, power);
-		ua.pletinnya.fx.Anim.play(p, switch (f.formType()) {
-			case PROJECTILE, TOUCH -> ua.pletinnya.fx.Anim.THRUST;
-			case AREA, CONSTRUCT -> ua.pletinnya.fx.Anim.RAISE;
-			case SELF -> ua.pletinnya.fx.Anim.SELF;
-		}, power);
-
-		switch (f.formType()) {
-			case PROJECTILE -> {
-				WeaveProjectileEntity proj = new WeaveProjectileEntity(w, p, f, power);
-				proj.setVelocity(p, p.getPitch(), p.getYaw(), 0f, 1.2f + f.range() * 0.08f, 0.5f);
-				w.spawnEntity(proj);
-				w.playSound(null, p.getX(), p.getY(), p.getZ(), SoundEvents.ENTITY_ILLUSIONER_CAST_SPELL, SoundCategory.PLAYERS, 0.7f, 1.2f);
-			}
-			case SELF -> {
-				if (now) SpellEffects.self(ctx, p);
-				else WeaveManager.rune(ctx, p.getPos(), p, facing);
-			}
-			case TOUCH -> {
-				Target t = find(p, 4.5);
-				if (now) {
-					if (t.entity() instanceof LivingEntity le) SpellEffects.entity(ctx, le, power * 1.25f);
-					else SpellEffects.area(ctx, t.pos(), 1.5f);
-				} else {
-					WeaveManager.rune(ctx, t.pos(), t.entity() instanceof LivingEntity ? t.entity() : null, facing);
-				}
-			}
-			case AREA -> {
-				Target t = find(p, f.reach());
-				if (now) SpellEffects.area(ctx, t.pos(), f.radius());
-				else WeaveManager.rune(ctx, t.pos(), null, facing);
-			}
-			case CONSTRUCT -> {
-				Target t = find(p, f.reach());
-				if (now) SpellEffects.construct(ctx, t.placePos(), facing);
-				else WeaveManager.rune(ctx, Vec3d.ofBottomCenter(t.placePos()), null, facing);
-			}
+		if (f.triggerType() == SpellTrigger.RETALIATE) {
+			// оберіг: закляття чекає на удар по магу
+			ua.pletinnya.fx.Anim.play(p, ua.pletinnya.fx.Anim.SELF, power);
+			SpellForms.armRetaliate(p, f, power);
+			p.sendMessage(net.minecraft.text.Text.translatable("message.pletinnya.retaliate_armed").formatted(Formatting.AQUA), true);
+			return;
 		}
-		p.swingHand(Hand.MAIN_HAND, true);
+		ua.pletinnya.fx.Anim.play(p, animFor(f.formType()), power);
+		SpellForms.deliver(p, f, power);
+		if (f.triggerType() == SpellTrigger.PULSE) SpellForms.pulse(p, f, power);
+	}
+
+	/** Яку анімацію тіла грати для форми. */
+	public static int animFor(SpellForm form) {
+		return switch (form) {
+			case PROJECTILE, TOUCH, BEAM, CONE, CHAIN, BLINK -> ua.pletinnya.fx.Anim.THRUST;
+			case AREA, CONSTRUCT, RAIN, WAVE, ELEMENTAL -> ua.pletinnya.fx.Anim.RAISE;
+			case SELF, SHIELD, ORBIT -> ua.pletinnya.fx.Anim.SELF;
+		};
 	}
 
 	/** Маг росте, коли користується магією. */
@@ -237,7 +221,7 @@ public final class SpellCaster {
 			d.conductivity = Math.min(Ranks.conductivityCap(d.rank), d.conductivity + 1 + d.conductivity / 50);
 		}
 		if (d.precision < 100 && chance > 0.05f && chance < 0.6f && r.nextFloat() < 0.25f) d.precision++;
-		if (f.triggerType() != SpellTrigger.IMMEDIATE) d.addFeat(MageData.FEAT_TRIGGER);
+		if (f.triggerType().isRune()) d.addFeat(MageData.FEAT_TRIGGER);
 		if (cx >= 36) d.addFeat(MageData.FEAT_COMPLEX);
 		if (cost >= 400f && !misfired) d.addFeat(MageData.FEAT_GRAND);
 		d.markDirty();

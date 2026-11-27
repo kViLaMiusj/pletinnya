@@ -18,5 +18,13 @@ public final class ModEntities {
 			.trackingTickInterval(10)
 			.build("weave_projectile"));
 
+	public static final EntityType<ua.pletinnya.entity.SpellSpiritEntity> SPELL_SPIRIT = Registry.register(Registries.ENTITY_TYPE,
+		Pletinnya.id("spell_spirit"),
+		EntityType.Builder.<ua.pletinnya.entity.SpellSpiritEntity>create(ua.pletinnya.entity.SpellSpiritEntity::new, SpawnGroup.MISC)
+			.dimensions(0.6f, 0.6f)
+			.maxTrackingRange(6)
+			.trackingTickInterval(2)
+			.build("spell_spirit"));
+
 	public static void init() {}
 }

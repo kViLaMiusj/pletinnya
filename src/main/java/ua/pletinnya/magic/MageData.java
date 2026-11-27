@@ -11,6 +11,9 @@ import java.util.List;
 
 /** Усе, що відомо про мага: чотири характеристики, ранг, досвід напрямів і завчені формули. */
 public class MageData {
+	/** Дані мага на клієнті (встановлює клієнтська частина моду; на сервері — null). */
+	public static java.util.function.Supplier<MageData> clientData = () -> null;
+
 	public static final int SPELL_SLOTS = 9;
 
 	public static final int FEAT_SUSTAINED = 1;

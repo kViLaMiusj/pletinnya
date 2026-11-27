@@ -41,6 +41,14 @@ public class StaffItem extends Item {
 	@Override
 	public TypedActionResult<ItemStack> use(World world, PlayerEntity user, Hand hand) {
 		ItemStack stack = user.getStackInHand(hand);
+		if (!user.isSneaking()) {
+			MageData md = world.isClient ? MageData.clientData.get() : user.getAttachedOrCreate(ModAttachments.MAGE);
+			if (md != null && !md.selectedSpell().isEmpty() && md.selectedSpell().triggerType() == ua.pletinnya.magic.SpellTrigger.CHARGED) {
+				// накопичення: тримаєш — сила росте, відпускаєш — закляття зривається
+				user.setCurrentHand(hand);
+				return TypedActionResult.consume(stack);
+			}
+		}
 		if (!world.isClient && user instanceof ServerPlayerEntity sp) {
 			if (sp.isSneaking()) {
 				MageData d = sp.getAttachedOrCreate(ModAttachments.MAGE);
@@ -53,6 +61,50 @@ public class StaffItem extends Item {
 			}
 		}
 		return TypedActionResult.success(stack, world.isClient());
+	}
+
+	@Override
+	public int getMaxUseTime(ItemStack stack, net.minecraft.entity.LivingEntity user) {
+		return 72000;
+	}
+
+	@Override
+	public net.minecraft.util.UseAction getUseAction(ItemStack stack) {
+		return net.minecraft.util.UseAction.NONE;
+	}
+
+	/** Скільки тіків треба тримати для повного накопичення. */
+	public static int fullCharge(ua.pletinnya.magic.SpellFormula f) {
+		return 20 + f.complexity();
+	}
+
+	@Override
+	public void usageTick(World world, net.minecraft.entity.LivingEntity user, ItemStack stack, int remainingUseTicks) {
+		if (world.isClient || !(user instanceof ServerPlayerEntity sp)) return;
+		int used = getMaxUseTime(stack, user) - remainingUseTicks;
+		MageData d = sp.getAttachedOrCreate(ModAttachments.MAGE);
+		int full = fullCharge(d.selectedSpell());
+		if (used == full) {
+			world.playSound(null, sp.getX(), sp.getY(), sp.getZ(), net.minecraft.sound.SoundEvents.BLOCK_AMETHYST_BLOCK_CHIME, net.minecraft.sound.SoundCategory.PLAYERS, 1f, 1.6f);
+			sp.sendMessage(Text.translatable("message.pletinnya.charged_full").formatted(Formatting.AQUA), true);
+		}
+		if (used % 4 == 0 && used <= full) {
+			float k = Math.min(1f, used / (float) full);
+			((net.minecraft.server.world.ServerWorld) world).spawnParticles(ua.pletinnya.magic.SpellEffects.particle(d.selectedSpell().elementType()),
+				sp.getX(), sp.getBodyY(0.8), sp.getZ(), 2 + (int) (k * 6), 0.5, 0.4, 0.5, 0.02);
+		}
+	}
+
+	@Override
+	public void onStoppedUsing(ItemStack stack, World world, net.minecraft.entity.LivingEntity user, int remainingUseTicks) {
+		if (world.isClient || !(user instanceof ServerPlayerEntity sp)) return;
+		MageData d = sp.getAttachedOrCreate(ModAttachments.MAGE);
+		ua.pletinnya.magic.SpellFormula f = d.selectedSpell();
+		if (f.isEmpty()) return;
+		int used = getMaxUseTime(stack, user) - remainingUseTicks;
+		float charge = Math.min(1f, used / (float) fullCharge(f));
+		float mul = used < 5 ? 0.5f : 0.5f + charge * 1.3f;
+		SpellCaster.cast(sp, d, f, mul);
 	}
 
 	@Override

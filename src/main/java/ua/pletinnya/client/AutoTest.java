@@ -194,8 +194,8 @@ public final class AutoTest {
 			add(6, c -> { c.player.setYaw(0f); c.player.setPitch(28f); });
 			add(7, c -> {
 				double x = c.player.getX(), y = c.player.getY(), z = c.player.getZ();
-				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x - 3.5, y, z + 8, 0, 0, 0, 1.5f, 2f));
-				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x + 3.0, y, z + 9, 0, 0, 0, 5f, 10f));
+				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x - 3.5, y, z + 8, 0, 0, 0, 1.5f, 2f, 0f, 0f));
+				ua.pletinnya.client.fx.ClientVfx.play(c.world, new ua.pletinnya.fx.Vfx.Payload(ua.pletinnya.fx.Vfx.IMPACT, e.ordinal(), x + 3.0, y, z + 9, 0, 0, 0, 5f, 10f, 0f, 0f));
 			});
 			add(30, c -> shot(c, "impact3d_" + e.id));
 		}
@@ -233,6 +233,49 @@ public final class AutoTest {
 			}));
 			add(20, c -> shot(c, "construct_" + e.id));
 		}
+		// нові форми, злиття, пробивання й залп
+		add(10, c -> {
+			c.options.setPerspective(Perspective.THIRD_PERSON_BACK);
+			c.options.hudHidden = true;
+			c.player.setYaw(0f); c.player.setPitch(4f);
+			cmd(c, "kill @e[type=pletinnya:weave_projectile]");
+			cmd(c, "kill @e[type=pletinnya:spell_spirit]");
+			cmd(c, "item replace entity @me weapon.mainhand with pletinnya:staff_mana");
+		});
+		Object[][] forms = {
+			{SpellForm.BEAM, Element.LIGHTNING, Element.WATER, 2, "beam"},
+			{SpellForm.CONE, Element.FIRE, null, 4, "cone"},
+			{SpellForm.CHAIN, Element.LIGHTNING, null, 7, "chain"},
+			{SpellForm.RAIN, Element.ICE, null, 30, "rain"},
+			{SpellForm.ELEMENTAL, Element.FIRE, null, 34, "elemental"},
+			{SpellForm.ORBIT, Element.MANA, null, 20, "orbit"},
+			{SpellForm.WAVE, Element.EARTH, null, 9, "wave"},
+			{SpellForm.SHIELD, Element.WATER, null, 12, "shield"},
+			{SpellForm.PROJECTILE, Element.FIRE, Element.WIND, 7, "fusion_volley"},
+			{SpellForm.BLINK, Element.WIND, null, 4, "blink"},
+		};
+		for (Object[] fm : forms) {
+			SpellForm form = (SpellForm) fm[0];
+			Element e1 = (Element) fm[1], e2 = (Element) fm[2];
+			int wait = (Integer) fm[3];
+			String nm = (String) fm[4];
+			add(12, c -> {
+				cmd(c, "kill @e[type=minecraft:husk]");
+				for (int k = 0; k < 5; k++) cmd(c, "execute at @me run summon minecraft:husk ~" + (k * 2 - 4) + " ~ ~" + (9 + (k % 2) * 2) + " {NoAI:1b,PersistenceRequired:1b,Rotation:[180f,0f]}");
+			});
+			add(wait, c -> serverPlayer(c, p -> {
+				p.setYaw(0f); p.setPitch(form == SpellForm.RAIN ? 25f : 4f);
+				MageData d = p.getAttachedOrCreate(ModAttachments.MAGE);
+				d.rank = 7; d.mana = 10000; d.maxMana = 10000; d.conductivity = 3000; d.precision = 100;
+				SpellFormula sf = new SpellFormula("t", e1.ordinal(), form.ordinal(), 6, 5, 4, 3, 0, 90, 5, form == SpellForm.PROJECTILE ? 5 : 3, 2, 4, e2 == null ? -1 : e2.ordinal());
+				SpellCaster.forget(p.getUuid());
+				SpellCaster.cast(p, d, sf);
+			}));
+			add(10, c -> shot(c, "form_" + nm));
+			add(20, c -> { cmd(c, "kill @e[type=pletinnya:spell_spirit]"); cmd(c, "kill @e[type=pletinnya:weave_projectile]"); });
+			if (form == SpellForm.BLINK) add(2, c -> cmd(c, "execute at @me run tp @me ~ ~ ~-8 0 0"));
+		}
+		add(4, c -> cmd(c, "kill @e[type=minecraft:husk]"));
 		// інтерфейс
 		add(10, c -> serverPlayer(c, p -> {
 			MageData d = p.getAttachedOrCreate(ModAttachments.MAGE);

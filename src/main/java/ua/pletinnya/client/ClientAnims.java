@@ -17,6 +17,8 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.util.Arm;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import ua.pletinnya.Pletinnya;
 import ua.pletinnya.fx.Anim;
 
@@ -29,8 +31,79 @@ public final class ClientAnims {
 
 	private static final Identifier LAYER = Pletinnya.id("cast");
 
+	public static final int CHANNEL = 6;
+	private static final java.util.Set<Integer> CHANNELING = new java.util.HashSet<>();
+
 	public static void init() {
 		PlayerAnimationFactory.ANIMATION_DATA_FACTORY.registerFactory(LAYER, 42, player -> new ModifierLayer<>());
+		net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents.END_CLIENT_TICK.register(ClientAnims::tickChannel);
+	}
+
+	/** Накопичення: поки маг тримає посох із накопичувальним закляттям — поза зосередження й іскри довкола навершя. */
+	private static void tickChannel(MinecraftClient mc) {
+		if (mc.world == null) { CHANNELING.clear(); return; }
+		for (AbstractClientPlayerEntity pl : mc.world.getPlayers()) {
+			boolean ch = pl.isUsingItem() && GuiIcons.HAS.contains(Registries.ITEM.getId(pl.getActiveItem().getItem()));
+			boolean was = CHANNELING.contains(pl.getId());
+			if (ch && !was) {
+				CHANNELING.add(pl.getId());
+				startLoop(pl);
+				if (pl == mc.player) { fpKind = CHANNEL; fpStart = pl.age; }
+			} else if (!ch && was) {
+				CHANNELING.remove(pl.getId());
+				stopLoop(pl);
+				if (pl == mc.player && fpKind == CHANNEL) fpKind = -1;
+			}
+			if (ch) {
+				int used = pl.getItemUseTime();
+				float k = Math.min(1f, used / 40f);
+				Vec3d look = pl.getRotationVec(1f);
+				Vec3d right = new Vec3d(-look.z, 0, look.x).normalize();
+				Vec3d tip = pl.getEyePos().add(look.multiply(0.7)).add(right.multiply(0.35)).add(0, 0.25 + k * 0.2, 0);
+				int color = 0x9A8CFF;
+				if (pl == mc.player && ua.pletinnya.client.ClientMage.data != null) color = ua.pletinnya.client.ClientMage.data.selectedSpell().elementType().color;
+				for (int i = 0; i < 1 + (int) (k * 3); i++) {
+					double a = (pl.age * 0.4 + i * 2.1);
+					double rr = 0.55 - k * 0.3;
+					mc.world.addParticle(new ua.pletinnya.fx.FxEffects.Mote(color, 0.06f + k * 0.06f, 12),
+						tip.x + Math.cos(a) * rr, tip.y + Math.sin(a * 1.3) * 0.2, tip.z + Math.sin(a) * rr,
+						-Math.cos(a) * 0.04, 0.01, -Math.sin(a) * 0.04);
+				}
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static ModifierLayer<IAnimation> layer(AbstractClientPlayerEntity player) {
+		try {
+			return (ModifierLayer<IAnimation>) PlayerAnimationAccess.getPlayerAssociatedData(player).get(LAYER);
+		} catch (Throwable t) {
+			return null;
+		}
+	}
+
+	private static void startLoop(AbstractClientPlayerEntity pl) {
+		ModifierLayer<IAnimation> layer = layer(pl);
+		if (layer == null) return;
+		boolean left = pl.getMainArm() == Arm.LEFT;
+		B b = new B(left, 24);
+		b.b.isLooped = true;
+		b.b.returnTick = 8;
+		// обидві руки тримають посох перед собою; дрібне тремтіння від накопиченої сили
+		b.main(8, -1.45f, -0.3f, 0f).main(12, -1.5f, -0.32f, 0.03f).main(16, -1.44f, -0.28f, -0.02f).main(20, -1.51f, -0.31f, 0.02f).main(24, -1.45f, -0.3f, 0f)
+			.off(8, -1.35f, 0.55f, 0f).off(14, -1.4f, 0.57f, 0f).off(20, -1.34f, 0.54f, 0f).off(24, -1.35f, 0.55f, 0f)
+			.body(8, 0.06f, 0f).body(24, 0.06f, 0f)
+			.head(8, 0.1f).head(24, 0.1f);
+		KeyframeAnimationPlayer kp = new KeyframeAnimationPlayer(b.build()).setFirstPersonMode(FirstPersonMode.DISABLED);
+		layer.replaceAnimationWithFade(AbstractFadeModifier.standardFadeIn(5, Ease.INOUTSINE), kp, true);
+	}
+
+	private static void stopLoop(AbstractClientPlayerEntity pl) {
+		ModifierLayer<IAnimation> layer = layer(pl);
+		if (layer == null) return;
+		// якщо закляття вже зірвалось, анімацію замінить пакет удару; інакше — плавно відпустити
+		if (layer.getAnimation() instanceof KeyframeAnimationPlayer k && k.getData().isInfinite())
+			layer.replaceAnimationWithFade(AbstractFadeModifier.standardFadeIn(5, Ease.INOUTSINE), null);
 	}
 
 	public static void onPayload(Anim.Payload p) {
@@ -62,7 +135,7 @@ public final class ClientAnims {
 	private static int fpKind = -1;
 	private static int fpStart = 0;
 
-	private static final int[] FP_LEN = {12, 18, 16, 26, 18, 10};
+	private static final int[] FP_LEN = {12, 18, 16, 26, 18, 10, 100000};
 
 	/** Зсув посоха від першої особи: {x, y, z, нахил°} або null, коли руху немає. */
 	public static float[] firstPersonOffset(AbstractClientPlayerEntity p, float td) {
@@ -72,6 +145,7 @@ public final class ClientAnims {
 		if (t < 0 || t > len) { fpKind = -1; return null; }
 		float f = t / len;
 		float bell = (float) Math.sin(Math.PI * f);
+		if (fpKind == CHANNEL && !p.isUsingItem()) { fpKind = -1; return null; }
 		switch (fpKind) {
 			case Anim.THRUST -> {
 				float up = f < 0.25f ? f / 0.25f : 1f - (f - 0.25f) / 0.75f;
@@ -87,6 +161,11 @@ public final class ClientAnims {
 			case Anim.SELF -> { return new float[]{-0.3f * bell, 0.05f * bell, 0.05f * bell, -8f * bell}; }
 			case Anim.PRAY -> { return new float[]{-0.28f * bell, -0.12f * bell, 0f, -6f * bell}; }
 			case Anim.ROAR -> { return new float[]{0.12f * bell, -0.22f * bell, 0f, 12f * bell}; }
+			case CHANNEL -> {
+				float k = Math.min(1f, t / 40f);
+				float tr = MathHelper.sin(t * 2.3f) * 0.008f * (1 + k * 2);
+				return new float[]{-0.18f * Math.min(1f, t / 6f) + tr, 0.08f * k + tr, -0.05f, -6f * Math.min(1f, t / 6f)};
+			}
 			default -> { return new float[]{0.05f * bell, 0.05f * bell, 0.15f * bell, 15f * bell}; }
 		}
 	}

@@ -41,12 +41,18 @@ public class Pletinnya implements ModInitializer {
 
 		ServerTickEvents.END_SERVER_TICK.register(server -> {
 			WeaveManager.tick(server);
+			ua.pletinnya.magic.SpellScheduler.tick(server);
 			ManaTicker.tick(server);
+		});
+		net.fabricmc.fabric.api.entity.event.v1.ServerLivingEntityEvents.AFTER_DAMAGE.register((entity, source, base, taken, blocked) -> {
+			if (entity instanceof net.minecraft.server.network.ServerPlayerEntity sp && taken > 0 && sp.isAlive())
+				ua.pletinnya.magic.SpellForms.onDamaged(sp, source);
 		});
 		ServerPlayConnectionEvents.JOIN.register((handler, sender, server) ->
 			handler.getPlayer().getAttachedOrCreate(ModAttachments.MAGE).markDirty());
 		ServerPlayConnectionEvents.DISCONNECT.register((handler, server) -> {
 			SpellCaster.forget(handler.getPlayer().getUuid());
+			ua.pletinnya.magic.SpellForms.forget(handler.getPlayer().getUuid());
 			ManaTicker.forget(handler.getPlayer().getUuid());
 		});
 		ServerPlayerEvents.AFTER_RESPAWN.register((oldPlayer, newPlayer, alive) -> {

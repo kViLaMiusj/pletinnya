@@ -36,6 +36,8 @@ public class PletinnyaClient implements ClientModInitializer {
 			if (ctx.client().world != null) ua.pletinnya.client.fx.ClientVfx.play(ctx.client().world, payload);
 		});
 		ClientAnims.init();
+		MageData.clientData = () -> ClientMage.data;
+		EntityRendererRegistry.register(ua.pletinnya.registry.ModEntities.SPELL_SPIRIT, ua.pletinnya.client.render.SpellSpiritRenderer::new);
 		ClientPlayNetworking.registerGlobalReceiver(ua.pletinnya.fx.Anim.Payload.ID, (payload, ctx) -> ClientAnims.onPayload(payload));
 
 		CAST = key("cast", GLFW.GLFW_KEY_R);

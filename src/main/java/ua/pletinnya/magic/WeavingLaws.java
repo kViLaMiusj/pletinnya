@@ -30,6 +30,11 @@ public final class WeavingLaws {
 		if (form.usesSize) c *= 0.7f + 0.25f * f.size();
 		if (form.usesRange) c *= 0.8f + 0.12f * f.range();
 		c *= 0.7f + 0.25f * f.duration();
+		if (form.usesSpeed) c *= 0.85f + 0.05f * f.speed();
+		if (form.usesCount) c *= 1f + 0.55f * (f.count() - 1);
+		if (form.usesPierce) c *= 1f + 0.12f * f.pierce();
+		if (form.usesHoming) c *= 1f + 0.08f * f.homing();
+		c *= Fusion.costMul(f);
 		c *= form.costMul;
 		c *= f.triggerType().costMul;
 		c *= environmentFactor(p, el);
@@ -119,6 +124,10 @@ public final class WeavingLaws {
 		if (f.name().isBlank()) return Text.translatable("message.pletinnya.no_name");
 		if (f.triggerType().minRank > d.rank)
 			return Text.translatable("message.pletinnya.trigger_rank", Ranks.title(f.triggerType().minRank));
+		if (f.formType().minRank > d.rank)
+			return Text.translatable("message.pletinnya.form_rank", Ranks.title(f.formType().minRank));
+		if (f.fused() && d.rank < 3)
+			return Text.translatable("message.pletinnya.fusion_rank", Ranks.title(3));
 		int limit = understandingLimit(d, f.elementType());
 		if (f.complexity() > limit)
 			return Text.translatable("message.pletinnya.too_complex", f.complexity(), limit);

@@ -66,6 +66,7 @@ public final class SpellEffects {
 				else area(ctx, pos, 1.5f);
 			}
 			case CONSTRUCT -> construct(ctx, BlockPos.ofFloored(pos), facing);
+			default -> area(ctx, pos, ctx.formula().radius());
 		}
 	}
 

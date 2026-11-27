@@ -29,6 +29,9 @@ import ua.pletinnya.registry.ModItems;
 public class WeaveProjectileEntity extends ThrownItemEntity {
 	private static final net.minecraft.entity.data.TrackedData<Integer> SIZE = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
 	private static final net.minecraft.entity.data.TrackedData<Integer> POWER = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
+	private static final net.minecraft.entity.data.TrackedData<Integer> ELEMENT2 = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
+	private int pierceLeft = 0;
+	private final java.util.Set<Integer> pierced = new java.util.HashSet<>();
 	private static final net.minecraft.entity.data.TrackedData<Integer> QUALITY = net.minecraft.entity.data.DataTracker.registerData(WeaveProjectileEntity.class, net.minecraft.entity.data.TrackedDataHandlerRegistry.INTEGER);
 	private SpellFormula formula = SpellFormula.empty();
 	private float power = 1f;
@@ -54,12 +57,53 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		builder.add(SIZE, 3);
 		builder.add(POWER, 3);
 		builder.add(QUALITY, 60);
+		builder.add(ELEMENT2, -1);
 	}
 
 	private void syncStats() {
 		dataTracker.set(SIZE, formula.size());
 		dataTracker.set(POWER, Math.max(1, Math.round(formula.power() * Math.max(0.3f, power / Math.max(1f, formula.power())))));
 		dataTracker.set(QUALITY, formula.quality());
+		dataTracker.set(ELEMENT2, formula.fused() ? formula.element2() : -1);
+		pierceLeft = formula.pierce();
+	}
+
+	/** Друга стихія злиття або -1. */
+	public int element2Stat() { return dataTracker.get(ELEMENT2); }
+
+	@Override
+	protected boolean canHit(Entity entity) {
+		return super.canHit(entity) && !pierced.contains(entity.getId());
+	}
+
+	/** Наведення: снаряд плавно підрулює до найближчої цілі попереду. */
+	private void steer() {
+		int h = formula.homing();
+		if (h <= 0 || age < 3) return;
+		Vec3d v = getVelocity();
+		double speed = v.length();
+		if (speed < 0.05) return;
+		Vec3d dir = v.multiply(1 / speed);
+		double range = 5 + h * 1.6;
+		Entity owner = getOwner();
+		LivingEntity best = null;
+		double bestScore = Double.MAX_VALUE;
+		for (LivingEntity le : getWorld().getEntitiesByClass(LivingEntity.class, getBoundingBox().expand(range),
+			e -> e.isAlive() && !e.isSpectator() && e != owner && !pierced.contains(e.getId()))) {
+			Vec3d to = le.getPos().add(0, le.getHeight() * 0.5, 0).subtract(getPos());
+			double d = to.length();
+			if (d > range || d < 0.01) continue;
+			double dot = to.multiply(1 / d).dotProduct(dir);
+			if (dot < 0.25) continue;
+			double score = d * (1.6 - dot);
+			if (score < bestScore) { bestScore = score; best = le; }
+		}
+		if (best == null) return;
+		Vec3d want = best.getPos().add(0, best.getHeight() * 0.5, 0).subtract(getPos()).normalize();
+		double k = 0.04 + h * 0.025;
+		Vec3d nd = dir.multiply(1 - k).add(want.multiply(k)).normalize();
+		setVelocity(nd.multiply(speed));
+		velocityModified = true;
 	}
 
 	/** Розмір 1..10 — для 3D-образу на клієнті. */
@@ -96,6 +140,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 			return;
 		}
 		if (isRemoved()) return;
+		steer();
 		SpellTrigger trigger = formula.triggerType();
 		if (trigger == SpellTrigger.DELAYED && age >= formula.delayTicks()) {
 			release(getPos(), null);
@@ -107,7 +152,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 			if (someone) release(getPos(), null);
 		}
 		if (!isRemoved() && age > life) {
-			if (trigger == SpellTrigger.IMMEDIATE) {
+			if (!trigger.isRune()) {
 				((ServerWorld) world).spawnParticles(net.minecraft.particle.ParticleTypes.SMOKE, getX(), getY(), getZ(), 8, 0.1, 0.1, 0.1, 0.01);
 				discard();
 			} else {
@@ -118,8 +163,20 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 
 	@Override
 	protected void onEntityHit(EntityHitResult hit) {
-		if (!getWorld().isClient) release(hit.getPos(), hit.getEntity());
+		if (getWorld().isClient) return;
+		if (pierceLeft > 0 && hit.getEntity() instanceof LivingEntity le && getWorld() instanceof ServerWorld sw && !formula.triggerType().isRune()) {
+			// пробивання: проходить крізь ціль, трохи слабшаючи
+			ServerPlayerEntity caster = getOwner() instanceof ServerPlayerEntity sp ? sp : null;
+			ua.pletinnya.magic.SpellForms.hit(new SpellContext(sw, caster, formula, power), le, 1f);
+			ua.pletinnya.fx.Vfx.sendP(sw, ua.pletinnya.fx.Vfx.IMPACT, formula.element(), hit.getPos(), 0.6f + formula.size() * 0.1f, power);
+			pierced.add(le.getId());
+			pierceLeft--;
+			power *= 0.85f;
+			return;
+		}
+		release(hit.getPos(), hit.getEntity());
 	}
+
 
 	@Override
 	protected void onBlockHit(BlockHitResult hit) {
@@ -131,7 +188,7 @@ public class WeaveProjectileEntity extends ThrownItemEntity {
 		if (released || !(getWorld() instanceof ServerWorld sw)) return;
 		released = true;
 		ServerPlayerEntity caster = getOwner() instanceof ServerPlayerEntity sp ? sp : null;
-		SpellEffects.impact(new SpellContext(sw, caster, formula, power), pos, hit);
+		ua.pletinnya.magic.SpellForms.impact(new SpellContext(sw, caster, formula, power), pos, hit);
 		discard();
 	}
 

@@ -64,6 +64,24 @@ public class WeaveProjectileRenderer extends EntityRenderer<WeaveProjectileEntit
 			m.multiply(RotationAxis.POSITIVE_X.rotation(-pt));
 		}
 		VertexConsumer vc = vcp.getBuffer(solid());
+		drawElement(m, vc, el, t, S, P, id);
+		int e2 = en.element2Stat();
+		if (e2 >= 0) {
+			// друга стихія злиття — менший образ кружляє довкола першого
+			m.push();
+			m.multiply(RotationAxis.POSITIVE_Z.rotationDegrees(t * 12));
+			m.translate(S * 0.62f, 0, 0);
+			drawElement(m, vc, Element.byIndex(e2), t + 7, S * 0.5f, Math.max(1, P / 2), id + 1);
+			m.pop();
+		}
+		m.pop();
+		super.render(en, yaw, tickDelta, m, vcp, light);
+	}
+
+	// ====================================================================== образи
+
+	/** Об'ємний образ стихії з центром у (0,0,0), уперед — локальна +Z. */
+	public static void drawElement(MatrixStack m, VertexConsumer vc, Element el, float t, float S, int P, int id) {
 		switch (el) {
 			case FIRE -> fire(m, vc, t, S, P);
 			case WATER -> water(m, vc, t, S, P);
@@ -78,11 +96,7 @@ public class WeaveProjectileRenderer extends EntityRenderer<WeaveProjectileEntit
 			case BLOOD -> blood(m, vc, t, S, P);
 			case MANA -> mana(m, vc, t, S, P);
 		}
-		m.pop();
-		super.render(en, yaw, tickDelta, m, vcp, light);
 	}
-
-	// ====================================================================== образи
 
 	static void fire(MatrixStack m, VertexConsumer vc, float t, float S, int P) {
 		m.push();

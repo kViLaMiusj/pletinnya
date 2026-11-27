@@ -29,7 +29,7 @@ import java.util.List;
  * Шляхи (драконяча мова, угода з духом, віра й молитви).
  */
 public class WeavingScreen extends Screen {
-	private static final int W = 360, H = 232;
+	private static final int W = 360, H = 286;
 	private static int tab = 0;
 
 	private int slot;
@@ -37,7 +37,7 @@ public class WeavingScreen extends Screen {
 	private int left, top;
 	private TextFieldWidget nameField;
 	private final List<ButtonWidget> slotButtons = new ArrayList<>();
-	private ButtonWidget elementBtn, formBtn, triggerBtn;
+	private ButtonWidget elementBtn, fusionBtn, formBtn, triggerBtn;
 
 	// ручне плетіння
 	private int phase = 0;          // 0 — очікування, 1 — показ, 2 — введення, 3 — результат
@@ -47,7 +47,7 @@ public class WeavingScreen extends Screen {
 	private final long t0 = System.nanoTime();
 	private long lastFrame = System.nanoTime();
 	private long finishedAt = 0L;
-	private final float[] shownLen = new float[4];
+	private final float[] shownLen = new float[8];
 	private float frameDelta = 0f;
 	private float handDelta = 0f;
 
@@ -110,14 +110,21 @@ public class WeavingScreen extends Screen {
 		nameField.setChangedListener(s -> draft = draft.withName(s));
 		addDrawableChild(nameField);
 		y += 21;
-		elementBtn = cycler(x, y, d -> draft.withElement(Math.floorMod(draft.element() + d, Element.values().length)));
+		elementBtn = cycler(x, y, 114, d -> {
+			SpellFormula nf = draft.withElement(Math.floorMod(draft.element() + d, Element.values().length));
+			return nf.element2() == nf.element() ? nf.withElement2(-1) : nf;
+		});
+		fusionBtn = cycler(x + 118, y, 114, d -> {
+			int n = Element.values().length, e2 = draft.element2();
+			do { e2 = Math.floorMod(e2 + 1 + d, n + 1) - 1; } while (e2 == draft.element());
+			return draft.withElement2(e2);
+		});
 		y += 19;
 		formBtn = cycler(x, y, d -> draft.withForm(Math.floorMod(draft.form() + d, SpellForm.values().length)));
 		y += 19;
 		triggerBtn = cycler(x, y, d -> draft.withTrigger(Math.floorMod(draft.trigger() + d, SpellTrigger.values().length)));
 		y += 22;
-		paramRow(x, y, 0); paramRow(x + 118, y, 1);
-		paramRow(x, y + 19, 2); paramRow(x + 118, y + 19, 3);
+		for (int i = 0; i < PARAMS.length; i++) paramRow(x + (i % 2) * 118, y + (i / 2) * 19, i);
 
 		int by = top + H - 24;
 		addDrawableChild(ButtonWidget.builder(Text.translatable("screen.pletinnya.weave"), b ->
@@ -138,13 +145,19 @@ public class WeavingScreen extends Screen {
 	private interface Change { SpellFormula apply(int dir); }
 
 	private ButtonWidget cycler(int x, int y, Change ch) {
+		return cycler(x, y, 232, ch);
+	}
+
+	private ButtonWidget cycler(int x, int y, int w, Change ch) {
 		addDrawableChild(ButtonWidget.builder(Text.literal("<"), b -> { draft = ch.apply(-1).withQuality(0); refresh(); }).dimensions(x, y, 16, 16).build());
-		ButtonWidget mid = addDrawableChild(ButtonWidget.builder(Text.empty(), b -> { draft = ch.apply(1).withQuality(0); refresh(); }).dimensions(x + 18, y, 196, 16).build());
-		addDrawableChild(ButtonWidget.builder(Text.literal(">"), b -> { draft = ch.apply(1).withQuality(0); refresh(); }).dimensions(x + 216, y, 16, 16).build());
+		ButtonWidget mid = addDrawableChild(ButtonWidget.builder(Text.empty(), b -> { draft = ch.apply(1).withQuality(0); refresh(); }).dimensions(x + 18, y, w - 36, 16).build());
+		addDrawableChild(ButtonWidget.builder(Text.literal(">"), b -> { draft = ch.apply(1).withQuality(0); refresh(); }).dimensions(x + w - 16, y, 16, 16).build());
 		return mid;
 	}
 
-	private static final String[] PARAMS = {"power", "size", "range", "duration"};
+	private static final String[] PARAMS = {"power", "size", "range", "duration", "speed", "count", "pierce", "homing"};
+	private static final int[] PMIN = {1, 1, 1, 1, 1, 1, 0, 0};
+	private static final int[] PMAX = {10, 10, 10, 10, 10, SpellFormula.MAX_COUNT, SpellFormula.MAX_PIERCE, 10};
 
 	private void paramRow(int x, int y, int param) {
 		addDrawableChild(ButtonWidget.builder(Text.literal("-"), b -> { setParam(param, getParam(param) - (hasShiftDown() ? 3 : 1)); refresh(); }).dimensions(x + 70, y, 16, 16).build());
@@ -152,19 +165,26 @@ public class WeavingScreen extends Screen {
 	}
 
 	private int getParam(int i) {
-		return switch (i) { case 0 -> draft.power(); case 1 -> draft.size(); case 2 -> draft.range(); default -> draft.duration(); };
+		return switch (i) {
+			case 0 -> draft.power(); case 1 -> draft.size(); case 2 -> draft.range(); case 3 -> draft.duration();
+			case 4 -> draft.speed(); case 5 -> draft.count(); case 6 -> draft.pierce(); default -> draft.homing();
+		};
 	}
 
 	private void setParam(int i, int v) {
-		v = MathHelper.clamp(v, SpellFormula.MIN, SpellFormula.MAX);
+		v = MathHelper.clamp(v, PMIN[i], PMAX[i]);
 		draft = (switch (i) {
-			case 0 -> draft.withPower(v); case 1 -> draft.withSize(v); case 2 -> draft.withRange(v); default -> draft.withDuration(v);
+			case 0 -> draft.withPower(v); case 1 -> draft.withSize(v); case 2 -> draft.withRange(v); case 3 -> draft.withDuration(v);
+			case 4 -> draft.withSpeed(v); case 5 -> draft.withCount(v); case 6 -> draft.withPierce(v); default -> draft.withHoming(v);
 		}).withQuality(0);
 	}
 
 	private boolean paramUsed(int i) {
 		SpellForm f = draft.formType();
-		return switch (i) { case 1 -> f.usesSize; case 2 -> f.usesRange; default -> true; };
+		return switch (i) {
+			case 1 -> f.usesSize; case 2 -> f.usesRange; case 4 -> f.usesSpeed; case 5 -> f.usesCount;
+			case 6 -> f.usesPierce; case 7 -> f.usesHoming; default -> true;
+		};
 	}
 
 	private void pickSlot(int s) {
@@ -185,8 +205,16 @@ public class WeavingScreen extends Screen {
 	private void refresh() {
 		if (elementBtn == null) return;
 		Element e = draft.elementType();
-		elementBtn.setMessage(Text.translatable("screen.pletinnya.element").append(": ").append(e.displayName().copy().withColor(e.color)));
-		formBtn.setMessage(Text.translatable("screen.pletinnya.form").append(": ").append(draft.formType().displayName()));
+		elementBtn.setMessage(e.displayName().copy().withColor(e.color));
+		MutableText formT = Text.translatable("screen.pletinnya.form").append(": ").append(draft.formType().displayName());
+		if (draft.formType().minRank > ClientMage.data.rank) formT.formatted(Formatting.RED);
+		formBtn.setMessage(formT);
+		Element e2 = draft.element2Type();
+		MutableText fus = e2 == null ? Text.translatable("screen.pletinnya.fusion_none").formatted(Formatting.GRAY)
+			: Text.literal("+ ").append(e2.displayName().copy().withColor(e2.color));
+		if (e2 != null && ua.pletinnya.magic.Fusion.resonant(e, e2)) fus.append(Text.literal(" ✦").formatted(Formatting.GOLD));
+		if (e2 != null && ua.pletinnya.magic.Fusion.opposed(e, e2)) fus.append(Text.literal(" ✕").formatted(Formatting.RED));
+		fusionBtn.setMessage(fus);
 		MutableText trig = Text.translatable("screen.pletinnya.trigger").append(": ").append(draft.triggerType().displayName());
 		if (draft.triggerType().minRank > ClientMage.data.rank) trig.formatted(Formatting.RED);
 		triggerBtn.setMessage(trig);
@@ -201,7 +229,7 @@ public class WeavingScreen extends Screen {
 		MageData d = ClientMage.data;
 		int x = left + 120;
 		int y = top + 28 + 21 + 19 * 3 + 3;
-		for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < PARAMS.length; i++) {
 			int px = x + (i % 2) * 118, py = y + (i / 2) * 19;
 			int color = paramUsed(i) ? 0xF0E6D0 : 0x6A6070;
 			ctx.drawTextWithShadow(textRenderer, Text.translatable("screen.pletinnya.param." + PARAMS[i]), px, py + 4, color);
@@ -210,24 +238,24 @@ public class WeavingScreen extends Screen {
 		}
 		GuiDraw.sigil(ctx, draft.element(), x + 236, top + 49, draft.elementType().color);
 
-		int iy = y + 19 * 2 + 4;
+		int iy = y + 19 * 4 + 4;
 		ctx.fill(x - 2, iy - 3, x + 236, iy + 58, 0x66000000);
 		// діаграма ниток
 		int cx = x + 28, cy = iy + 26;
-		int[] angles = {-90, 0, 90, 180};
-		int[] cols = {0xFFFF8A5A, 0xFF7AD0FF, 0xFFB0FF7A, 0xFFE0B0FF};
+		int[] angles = {-90, 0, 90, 180, -45, 45, 135, 225};
+		int[] cols = {0xFFFF8A5A, 0xFF7AD0FF, 0xFFB0FF7A, 0xFFE0B0FF, 0xFFFFE07A, 0xFF7AFFD8, 0xFFFF7AC8, 0xFFB8B8FF};
 		float T = time();
-		for (int i = 0; i < 4; i++) {
-			float target = paramUsed(i) ? 6 + getParam(i) * 2 : 0;
+		for (int i = 0; i < PARAMS.length; i++) {
+			float target = paramUsed(i) ? 4 + getParam(i) * 2 : 0;
 			shownLen[i] += (target - shownLen[i]) * Math.min(1f, frameDelta * 9f);   // нитки плавно ростуть і вкорочуються
 			if (shownLen[i] < 0.5f) continue;
-			double a = Math.toRadians(angles[i] + 45);
+			double a = Math.toRadians(angles[i] + 22.5);
 			float len = shownLen[i];
 			int ex = cx + (int) (Math.cos(a) * len), ey = cy + (int) (Math.sin(a) * len);
 			GuiDraw.line(ctx, cx, cy, ex, ey, cols[i], 1);
 			GuiDraw.node(ctx, ex, ey, 2, cols[i]);
 			// іскра мани біжить ниткою від серця до кінця
-			float fr = (T * 0.9f + i * 0.25f) % 1f;
+			float fr = (T * 0.9f + i * 0.125f) % 1f;
 			GuiDraw.node(ctx, cx + (int) (Math.cos(a) * len * fr), cy + (int) (Math.sin(a) * len * fr), 1, 0xFFFFFFFF);
 		}
 		int pulse = 5 + Math.round(MathHelper.sin(T * 3.2f));
@@ -494,7 +522,7 @@ public class WeavingScreen extends Screen {
 	@Override
 	public void renderBackground(DrawContext ctx, int mouseX, int mouseY, float delta) {
 		super.renderBackground(ctx, mouseX, mouseY, delta);
-		ctx.drawTexture(GuiDraw.PANEL, left, top, 0f, 0f, W, H, 384, 256);
+		ctx.drawTexture(GuiDraw.PANEL, left, top, 0f, 0f, W, H, 384, 320);
 	}
 
 	@Override

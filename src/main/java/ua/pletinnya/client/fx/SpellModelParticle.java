@@ -8,6 +8,7 @@ import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.world.ClientWorld;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
@@ -27,8 +28,9 @@ public class SpellModelParticle extends Particle {
 	private final float r, power;
 	private final Vec3d dir;
 	private final int seed;
+	private float extra, extra2;
 
-	protected SpellModelParticle(ClientWorld world, int kind, Element el, Vec3d c, Vec3d dir, float r, float power, int life) {
+	protected SpellModelParticle(ClientWorld world, int kind, Element el, Vec3d c, Vec3d dir, float r, float power, int life, float extra, float extra2) {
 		super(world, c.x, c.y, c.z);
 		this.kind = kind;
 		this.el = el;
@@ -40,6 +42,8 @@ public class SpellModelParticle extends Particle {
 		this.gravityStrength = 0f;
 		this.velocityX = this.velocityY = this.velocityZ = 0;
 		this.seed = world.random.nextInt(100000);
+		this.extra = extra;
+		this.extra2 = extra2;
 	}
 
 	public static void spawn(ClientWorld w, Vfx.Payload p) {
@@ -55,10 +59,19 @@ public class SpellModelParticle extends Particle {
 			case Vfx.SELF -> life = 26;
 			case Vfx.DRAGON -> life = 22;
 			case Vfx.MISFIRE, Vfx.OVERLOAD -> life = 16;
+			case Vfx.BEAM -> life = 9;
+			case Vfx.CONE -> life = 14;
+			case Vfx.CHAIN -> life = 8;
+			case Vfx.RAIN_DROP -> life = 14;
+			case Vfx.RAIN_CLOUD -> life = (int) MathHelper.clamp(p.extra(), 20, 400);
+			case Vfx.WAVE -> life = (int) MathHelper.clamp(p.extra() / Math.max(0.1f, p.extra2()), 5, 200) + 8;
+			case Vfx.SHIELD -> life = (int) MathHelper.clamp(p.extra2(), 10, 2400);
+			case Vfx.BLINK -> life = 14;
+			case Vfx.ELEMENTAL -> life = 18;
 			default -> { return; }
 		}
 		int kind = p.kind() == Vfx.RUNE_FIRE ? Vfx.IMPACT : p.kind();
-		MinecraftClient.getInstance().particleManager.addParticle(new SpellModelParticle(w, kind, e, c, d, s, pw, life));
+		MinecraftClient.getInstance().particleManager.addParticle(new SpellModelParticle(w, kind, e, c, d, s, pw, life, p.extra(), p.extra2()));
 	}
 
 	@Override
@@ -82,6 +95,15 @@ public class SpellModelParticle extends Particle {
 			case Vfx.SELF -> self(m, vc, t, f);
 			case Vfx.DRAGON -> dragon(m, vc, t, f);
 			case Vfx.MISFIRE, Vfx.OVERLOAD -> misfire(m, vc, t, f);
+			case Vfx.BEAM -> beam(m, vc, t, f);
+			case Vfx.CONE -> cone(m, vc, t, f);
+			case Vfx.CHAIN -> chain(m, vc, t, f);
+			case Vfx.RAIN_DROP -> rainDrop(m, vc, t, f);
+			case Vfx.RAIN_CLOUD -> cloud(m, vc, t, f);
+			case Vfx.WAVE -> wave(m, vc, t, f);
+			case Vfx.SHIELD -> shield(m, vc, t, f, td, cp);
+			case Vfx.BLINK -> blink(m, vc, t, f);
+			case Vfx.ELEMENTAL -> summon(m, vc, t, f);
 			default -> {}
 		}
 		// спалах-сяйво в центрі, обернене до камери
@@ -448,5 +470,251 @@ public class SpellModelParticle extends Particle {
 			box(vc, m.peek(), -0.02f, -0.12f, -0.02f, 0.02f, 0.12f, 0.02f, argb((int) ((1 - f) * 230), i % 2 == 0 ? 0x6A3AA8 : 0x2A1A3A));
 			m.pop();
 		}
+	}
+
+	// ====================================================================== нові форми
+
+	/** Повернути систему так, щоб локальна +Z дивилася вздовж d. */
+	private static void orient(MatrixStack m, Vec3d d) {
+		if (d.lengthSquared() < 1e-6) return;
+		m.multiply(RotationAxis.POSITIVE_Y.rotation((float) MathHelper.atan2(d.x, d.z)));
+		m.multiply(RotationAxis.POSITIVE_X.rotation((float) -MathHelper.atan2(d.y, Math.sqrt(d.x * d.x + d.z * d.z))));
+	}
+
+	private int col2() { return extra2 >= 0 && (kind == Vfx.BEAM || kind == Vfx.CONE || kind == Vfx.CHAIN || kind == Vfx.BLINK || kind == Vfx.RAIN_DROP) ? Element.byIndex((int) extra2).color : -1; }
+
+	private void beam(MatrixStack m, VertexConsumer vc, float t, float f) {
+		float len = Math.max(0.5f, extra);
+		float w = r * (1f + 0.15f * MathHelper.sin(t * 2.2f)) * (f < 0.2f ? f / 0.2f : 1f - Math.max(0, f - 0.5f) / 0.5f);
+		if (w <= 0.01f) return;
+		m.push();
+		orient(m, dir);
+		int a = (int) (230 * (1f - f * 0.6f));
+		box(vc, m.peek(), -w / 2, -w / 2, 0, w / 2, w / 2, len, argb(a / 2, el.color));
+		box(vc, m.peek(), -w / 5, -w / 5, 0, w / 5, w / 5, len, argb(a, 0xFFFFFF));
+		int c2 = col2();
+		for (float z = 0.8f; z < len; z += 1.4f) {
+			m.push();
+			m.translate(0, 0, z);
+			m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+			m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 14 + z * 30));
+			ring(vc, m.peek(), w * 1.1f, w * 0.18f, 10, argb(a / 2, el.color));
+			m.pop();
+		}
+		if (c2 >= 0) for (float z = 0f; z < len; z += 0.35f) {
+			float ang = z * 2.2f + t * 0.8f;
+			m.push();
+			m.translate(MathHelper.cos(ang) * w * 0.9f, MathHelper.sin(ang) * w * 0.9f, z);
+			cube(vc, m.peek(), w * 0.22f, w * 0.22f, w * 0.22f, argb(a, c2));
+			m.pop();
+		}
+		m.pop();
+	}
+
+	private void cone(MatrixStack m, VertexConsumer vc, float t, float f) {
+		float half = r, dist = Math.max(2f, extra);
+		m.push();
+		orient(m, dir);
+		int n = 12 + (int) (power * 1.8f);
+		int c2 = col2();
+		for (int i = 0; i < n; i++) {
+			float ax = (h(i) * 2 - 1) * half * MathHelper.RADIANS_PER_DEGREE, ay = (h(i + 50) * 2 - 1) * half * 0.6f * MathHelper.RADIANS_PER_DEGREE;
+			float d = dist * easeOut(Math.min(1f, f * 1.3f)) * (0.55f + 0.45f * h(i + 9));
+			float s = (0.12f + 0.3f * f) * (0.7f + h(i + 3) * 0.6f);
+			m.push();
+			m.translate(MathHelper.sin(ax) * d, MathHelper.sin(ay) * d, MathHelper.cos(ax) * d);
+			m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 10 + i * 31));
+			m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(t * 7));
+			int c = c2 >= 0 && i % 3 == 0 ? c2 : (el == Element.FIRE ? mix(0xFFE27A, 0xC8301A, f) : el.color);
+			cube(vc, m.peek(), s, s, s, argb((int) (230 * (1 - f)), c));
+			m.pop();
+		}
+		m.pop();
+	}
+
+	private void chain(MatrixStack m, VertexConsumer vc, float t, float f) {
+		int sd = seed + (int) (t / 2) * 53;
+		float[][] pts = new float[8][];
+		float len = (float) dir.length();
+		for (int k = 0; k < 8; k++) {
+			float g = k / 7f;
+			float j = (k == 0 || k == 7) ? 0 : (hash(sd + k) - 0.5f) * Math.min(1.2f, len * 0.15f);
+			float jy = (k == 0 || k == 7) ? 0 : (hash(sd + k + 9) - 0.5f) * Math.min(1.2f, len * 0.15f);
+			pts[k] = new float[]{(float) dir.x * g + j, (float) dir.y * g + jy, (float) dir.z * g - j};
+		}
+		int a = (int) (240 * (1 - f));
+		bolt(vc, m.peek(), pts, r * 0.5f, argb(a, el.color));
+		bolt(vc, m.peek(), pts, r * 0.18f, argb(a, 0xFFFFFF));
+		int c2 = col2();
+		if (c2 >= 0) bolt(vc, m.peek(), pts, r * 0.3f, argb(a / 2, c2));
+	}
+
+	private void rainDrop(MatrixStack m, VertexConsumer vc, float t, float f) {
+		float fall = 6f;
+		int c2 = col2();
+		if (t < fall) {
+			float y = 8f * (1f - t / fall);
+			m.push();
+			m.translate(0, y, 0);
+			m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 20));
+			crystal(vc, m.peek(), r * 0.25f, r * 0.4f, r * 1.4f, argb(240, el.color));
+			if (c2 >= 0) crystal(vc, m.peek(), r * 0.12f, r * 0.25f, r * 0.9f, argb(240, c2));
+			box(vc, m.peek(), -r * 0.05f, 0, -r * 0.05f, r * 0.05f, 2.5f, r * 0.05f, argb(110, el.color));
+			m.pop();
+		} else {
+			float g = (t - fall) / (maxAge - fall);
+			m.push();
+			m.translate(0, 0.06, 0);
+			ring(vc, m.peek(), r * (0.3f + 1.2f * easeOut(g)), 0.1f, 18, argb((int) (200 * (1 - g)), el.color));
+			for (int i = 0; i < 6; i++) {
+				float a = i * 1.047f + h(i);
+				float d = r * 1.1f * easeOut(g);
+				m.push();
+				m.translate(MathHelper.cos(a) * d, (1.4f * g - 1.6f * g * g) * 1.5f, MathHelper.sin(a) * d);
+				cube(vc, m.peek(), 0.1f, 0.1f, 0.1f, argb((int) (220 * (1 - g)), c2 >= 0 && i % 2 == 0 ? c2 : el.color));
+				m.pop();
+			}
+			m.pop();
+		}
+	}
+
+	private void cloud(MatrixStack m, VertexConsumer vc, float t, float f) {
+		int a = (int) (170 * (f < 0.1f ? f / 0.1f : f > 0.85f ? (1 - f) / 0.15f : 1f));
+		int base = mix(0x3A3A48, el.color, 0.35f);
+		m.push();
+		m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 0.6f));
+		int n = 10 + (int) (r * 3);
+		for (int i = 0; i < n; i++) {
+			float ang = h(i) * 6.283f, d = (float) Math.sqrt(h(i + 7)) * r * 1.1f;
+			float sx = 1.2f + h(i + 3) * 1.6f, sy = 0.5f + h(i + 5) * 0.6f;
+			m.push();
+			m.translate(MathHelper.cos(ang) * d, (h(i + 11) - 0.5f) * 0.6f + 0.1f * MathHelper.sin(t * 0.05f + i), MathHelper.sin(ang) * d);
+			cube(vc, m.peek(), sx, sy, sx * 0.8f, argb(a, i % 3 == 0 ? shade(base, 1.3f) : base));
+			m.pop();
+		}
+		// спалахи всередині хмари
+		if ((int) (t / 3) % 4 == 0) {
+			m.push();
+			m.translate((h((int) t) - 0.5f) * r, -0.3f, (h((int) t + 3) - 0.5f) * r);
+			cube(vc, m.peek(), 0.9f, 0.4f, 0.9f, argb(a, el.color));
+			m.pop();
+		}
+		m.pop();
+	}
+
+	private void wave(MatrixStack m, VertexConsumer vc, float t, float f) {
+		float len = extra, step = Math.max(0.1f, extra2);
+		float d = Math.min(len, t * step);
+		float fade = d >= len ? 1f - (t - len / step) / 8f : 1f;
+		if (fade <= 0) return;
+		m.push();
+		orient(m, dir);
+		float w = r;
+		int n = (int) (w * 3) + 3;
+		float hgt = 0.8f + power * 0.12f;
+		for (int i = 0; i < n; i++) {
+			float x = -w / 2 + w * (i + 0.5f) / n;
+			float hh = hgt * (0.6f + 0.6f * h(i)) * (0.8f + 0.2f * MathHelper.sin(t * 0.8f + i));
+			m.push();
+			m.translate(x, 0, d);
+			int a = (int) (230 * fade);
+			switch (el) {
+				case ICE, EARTH, NATURE, BLOOD -> {
+					m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(-15));
+					crystal(vc, m.peek(), 0.18f + w * 0.02f, hh, 0.05f, argb(a, el == Element.EARTH ? 0x7A6248 : el.color));
+				}
+				default -> {
+					box(vc, m.peek(), -w / n / 2, 0, -0.15f, w / n / 2, hh, 0.15f, argb(a * 2 / 3, el.color));
+					box(vc, m.peek(), -w / n / 3, hh, -0.08f, w / n / 3, hh + 0.2f, 0.08f, argb(a, 0xFFFFFF));
+				}
+			}
+			m.pop();
+		}
+		// слід позаду фронту
+		for (int k = 1; k <= 4; k++) {
+			float z = d - k * 0.7f;
+			if (z < 0) break;
+			m.push();
+			m.translate(0, 0.05, z);
+			box(vc, m.peek(), -w / 2, 0, -0.1f, w / 2, 0.06f, 0.1f, argb((int) (150 * fade / k), el.color));
+			m.pop();
+		}
+		m.pop();
+	}
+
+	private void shield(MatrixStack m, VertexConsumer vc, float t, float f, float td, Vec3d cp) {
+		Entity e = world.getEntityById((int) extra);
+		if (e != null) {
+			// щит ходить за магом
+			Vec3d p = e.getLerpedPos(td);
+			m.translate(p.x - x, p.y - y, p.z - z);
+			setPos(p.x, p.y, p.z);
+		}
+		float a0 = f < 0.05f ? f / 0.05f : f > 0.9f ? (1 - f) / 0.1f : 1f;
+		float R = r;
+		m.push();
+		m.translate(0, 1.0, 0);
+		m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 1.5f));
+		for (int k = -2; k <= 2; k++) {
+			float lat = k * 0.5f;
+			m.push();
+			m.translate(0, MathHelper.sin(lat) * R * 1.05f, 0);
+			ring(vc, m.peek(), MathHelper.cos(lat) * R, 0.04f, 28, argb((int) (120 * a0), el.color));
+			m.pop();
+		}
+		for (int k = 0; k < 3; k++) {
+			m.push();
+			m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(k * 60));
+			m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));
+			ring(vc, m.peek(), R, 0.035f, 28, argb((int) (90 * a0), el.color));
+			m.pop();
+		}
+		int n = 6 + (int) power;
+		for (int i = 0; i < n; i++) {
+			float ang = i * 6.283f / n + t * 0.03f, lat = (h(i) - 0.5f) * 2.2f;
+			m.push();
+			m.translate(MathHelper.cos(ang) * MathHelper.cos(lat) * R, MathHelper.sin(lat) * R, MathHelper.sin(ang) * MathHelper.cos(lat) * R);
+			m.multiply(RotationAxis.POSITIVE_Y.rotation(-ang));
+			cube(vc, m.peek(), 0.04f, 0.2f, 0.2f, argb((int) (170 * a0), shade(el.color | 0xFF000000, 1.2f) & 0xFFFFFF));
+			m.pop();
+		}
+		m.pop();
+	}
+
+	private void blink(MatrixStack m, VertexConsumer vc, float t, float f) {
+		int a = (int) (220 * (1 - f));
+		int c2 = col2();
+		int n = 10;
+		for (int i = 0; i <= n; i++) {
+			float g = i / (float) n;
+			m.push();
+			m.translate(dir.x * g, dir.y * g + 1.0, dir.z * g);
+			m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 9 + i * 20));
+			float s = 0.25f * (1 - f) * (0.5f + g * 0.5f);
+			cube(vc, m.peek(), s, s * 2.2f, s, argb(a * (i + 3) / (n + 3), c2 >= 0 && i % 2 == 0 ? c2 : el.color));
+			m.pop();
+		}
+		for (int end = 0; end < 2; end++) {
+			m.push();
+			if (end == 1) m.translate(dir.x, dir.y, dir.z);
+			m.translate(0, 0.06, 0);
+			ring(vc, m.peek(), 0.4f + f * 1.2f, 0.08f, 20, argb(a, el.color));
+			m.pop();
+		}
+	}
+
+	private void summon(MatrixStack m, VertexConsumer vc, float t, float f) {
+		int a = (int) (220 * (1 - f));
+		m.push();
+		m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * 8));
+		ring(vc, m.peek(), r * (0.3f + 0.9f * easeOut(f)), 0.08f, 24, argb(a, el.color));
+		for (int i = 0; i < 8; i++) {
+			float ang = i * 0.785f;
+			m.push();
+			m.translate(MathHelper.cos(ang) * r * 0.6f * easeOut(f), f * 1.2f, MathHelper.sin(ang) * r * 0.6f * easeOut(f));
+			crystal(vc, m.peek(), 0.06f, 0.25f, 0.1f, argb(a, el.color));
+			m.pop();
+		}
+		m.pop();
 	}
 }
