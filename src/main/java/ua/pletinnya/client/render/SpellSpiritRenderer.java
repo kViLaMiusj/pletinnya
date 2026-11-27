@@ -43,6 +43,7 @@ public class SpellSpiritRenderer extends EntityRenderer<SpellSpiritEntity> {
 		VertexConsumer vc = vcp.getBuffer(solid());
 		m.push();
 		m.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(t * (orbit ? 8 : 2)));
+		if (!orbit) m.multiply(RotationAxis.POSITIVE_X.rotationDegrees(90));   // у елементаля хвости стихії здіймаються вгору, як полум'я
 		WeaveProjectileRenderer.drawElement(m, vc, el, t, S, P, en.getId());
 		m.pop();
 		if (!orbit) {
