@@ -215,7 +215,7 @@ public final class AutoTest {
 			add(when, c -> ClientAnims.play(c.player, k, 6f));
 			add(25, c -> shot(c, "anim_" + nm));
 		}
-		add(6, c -> c.options.setPerspective(Perspective.FIRST_PERSON));
+		add(6, c -> { c.options.setPerspective(Perspective.FIRST_PERSON); c.options.hudHidden = false; });
 		add(5, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.THRUST, 6f));
 		add(25, c -> shot(c, "anim_fp_thrust"));
 		add(5, c -> ClientAnims.play(c.player, ua.pletinnya.fx.Anim.RAISE, 6f));
